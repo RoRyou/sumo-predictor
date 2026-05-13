@@ -64,6 +64,105 @@ TECHNIQUE_KIMARITE = {
 
 DEFAULT_WINRATE_WINDOWS = (10, 30, 90)
 
+# T15 — basho stage thresholds (basho is 15 days)
+BASHO_DAYS = 15
+
+
+def add_stage_features(df: pd.DataFrame) -> pd.DataFrame:
+    """Add T15 basho-stage features: stage_early/mid/late, day_norm, senshuraku.
+
+    Assumes the input has either ``day`` or ``day_of_basho``.  Operates in place
+    on a copy (returns the new frame).  No leakage because day is deterministic
+    per row.
+    """
+    out = df.copy()
+    day_col = "day_of_basho" if "day_of_basho" in out.columns else "day"
+    if day_col not in out.columns:
+        return out
+    d = out[day_col].astype(float)
+    out["stage_early"] = (d <= 5).astype(int)
+    out["stage_mid"] = ((d >= 6) & (d <= 10)).astype(int)
+    out["stage_late"] = (d >= 11).astype(int)
+    out["day_norm"] = (d / float(BASHO_DAYS)).clip(0, 1)
+    out["senshuraku"] = (d == 15).astype(int)
+    return out
+
+
+# ---------------------------------------------------------------------- #
+# T7 — Kimarite style matchup table
+# ---------------------------------------------------------------------- #
+class KimariteMatchupTable:
+    """Compute historical winrate for each (style_A, style_B) ordered pair.
+
+    ``fit`` walks the **training** rows in chronological order using each
+    rikishi's running style ratio (pushing/belt/technique) to discretize each
+    rikishi into a dominant style at the time of the bout, then aggregates the
+    target ``y`` per ordered (style_A, style_B) pair.
+
+    ``transform`` joins the lookup back onto any dataframe via the
+    ``dominant_style_A`` / ``dominant_style_B`` columns derived from
+    ``pushing_ratio_*`` / ``belt_ratio_*`` (no time-walk needed at inference).
+    """
+
+    STYLES = ("pushing", "belt", "other")
+
+    def __init__(self, smoothing: float = 20.0) -> None:
+        self.smoothing = smoothing
+        self.global_mean_: float = 0.5
+        self.lookup_: dict[tuple[str, str], float] = {}
+
+    @staticmethod
+    def _dominant(push: float, belt: float) -> str:
+        if pd.isna(push) and pd.isna(belt):
+            return "other"
+        p = 0.0 if pd.isna(push) else float(push)
+        b = 0.0 if pd.isna(belt) else float(belt)
+        o = max(0.0, 1.0 - p - b)
+        # Pick max — ties default to "other" then "belt" then "pushing"
+        best = max(("pushing", p), ("belt", b), ("other", o), key=lambda kv: kv[1])[0]
+        return best
+
+    def fit(self, train_df: pd.DataFrame) -> "KimariteMatchupTable":
+        if train_df.empty or "y" not in train_df.columns:
+            return self
+        self.global_mean_ = float(train_df["y"].mean())
+        style_a = train_df.apply(
+            lambda r: self._dominant(r.get("pushing_ratio_A"), r.get("belt_ratio_A")),
+            axis=1,
+        )
+        style_b = train_df.apply(
+            lambda r: self._dominant(r.get("pushing_ratio_B"), r.get("belt_ratio_B")),
+            axis=1,
+        )
+        tmp = pd.DataFrame(
+            {"sa": style_a.values, "sb": style_b.values, "y": train_df["y"].values}
+        )
+        grp = tmp.groupby(["sa", "sb"])["y"].agg(["mean", "count"])
+        for (sa, sb), row in grp.iterrows():
+            n = float(row["count"])
+            m = float(row["mean"])
+            w = n / (n + self.smoothing)
+            self.lookup_[(sa, sb)] = w * m + (1 - w) * self.global_mean_
+        return self
+
+    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
+        out = df.copy()
+        if "pushing_ratio_A" not in out.columns:
+            out["kimarite_matchup_wr"] = self.global_mean_
+            return out
+        sa = out.apply(
+            lambda r: self._dominant(r.get("pushing_ratio_A"), r.get("belt_ratio_A")),
+            axis=1,
+        )
+        sb = out.apply(
+            lambda r: self._dominant(r.get("pushing_ratio_B"), r.get("belt_ratio_B")),
+            axis=1,
+        )
+        out["kimarite_matchup_wr"] = [
+            self.lookup_.get((a, b), self.global_mean_) for a, b in zip(sa, sb)
+        ]
+        return out
+
 # Time-decay lambda per basho (5-6 basho/year * lambda 0.05 ~= 30% decay/year)
 DEFAULT_TIME_DECAY_LAMBDA = 0.05
 
@@ -464,8 +563,13 @@ def _style_ratio(st: RikishiState) -> tuple[float, float]:
 # Symmetric augmentation (apply during training, not at build time)
 # ---------------------------------------------------------------------- #
 def symmetric_augment(df: pd.DataFrame) -> pd.DataFrame:
-    """Return df concatenated with a mirrored copy (swap A<->B, flip label)."""
-    swap_pairs = [
+    """Return df concatenated with a mirrored copy (swap A<->B, flip label).
+
+    Now also swaps any ``te__*_A``/``te__*_B`` columns and ``*_A``/``*_B``
+    suffixed columns generically so the mirrored rows carry the swapped target
+    encoding instead of the originals (fixes the T6 regression).
+    """
+    explicit_pairs = [
         ("eastId", "westId"),
         ("heya_A", "heya_B"),
         ("shusshin_A", "shusshin_B"),
@@ -480,7 +584,16 @@ def symmetric_augment(df: pd.DataFrame) -> pd.DataFrame:
         ("career_bouts_A", "career_bouts_B"),
     ]
     for w in DEFAULT_WINRATE_WINDOWS:
-        swap_pairs.append((f"winrate_A_{w}", f"winrate_B_{w}"))
+        explicit_pairs.append((f"winrate_A_{w}", f"winrate_B_{w}"))
+
+    # Auto-discover any *_A / *_B pair (covers te__heya_A, te__shusshin_A, etc.)
+    pair_set = set()
+    for col in df.columns:
+        if col.endswith("_A"):
+            counterpart = col[:-2] + "_B"
+            if counterpart in df.columns:
+                pair_set.add((col, counterpart))
+    pair_set.update(explicit_pairs)
 
     flip_sign = [
         "rank_diff", "height_diff", "weight_diff", "bmi_diff", "age_diff",
@@ -488,7 +601,7 @@ def symmetric_augment(df: pd.DataFrame) -> pd.DataFrame:
         *(f"winrate_diff_{w}" for w in DEFAULT_WINRATE_WINDOWS),
     ]
     mirror = df.copy()
-    for a, b in swap_pairs:
+    for a, b in pair_set:
         if a in mirror.columns and b in mirror.columns:
             mirror[a], mirror[b] = df[b].values, df[a].values
     for c in flip_sign:

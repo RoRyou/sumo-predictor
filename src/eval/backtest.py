@@ -26,6 +26,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score, log_loss, roc_auc_score
 
+from src.features.structural import add_stage_features
 from src.training.train_struct import (
     CATEGORICAL_COLS,
     LABEL_COL,
@@ -43,6 +44,7 @@ def walk_forward(
     start_basho: str,
     end_basho: str | None = None,
     min_train_basho: int = 6,
+    xgb_params: dict | None = None,
 ) -> pd.DataFrame:
     """Walk forward basho-by-basho.  Returns one summary row per basho."""
     features = features.copy()
@@ -61,6 +63,9 @@ def walk_forward(
         te = features[features["bashoId"] == b]
         if len(tr) < 500 or len(te) == 0:
             continue
+        # T15 stage features (deterministic, leak-free)
+        tr = add_stage_features(tr)
+        te = add_stage_features(te)
         y_tr = tr[LABEL_COL].to_numpy()
         y_te = te[LABEL_COL].to_numpy()
         w_tr = tr[WEIGHT_COL].to_numpy() if WEIGHT_COL in tr.columns else None
@@ -72,7 +77,7 @@ def walk_forward(
         Xtr = Xtr[cols].fillna(-9999.0)
         Xte = Xte[cols].fillna(-9999.0)
 
-        m = make_xgb({"n_estimators": 300, "learning_rate": 0.05})
+        m = make_xgb(xgb_params or {"n_estimators": 300, "learning_rate": 0.05})
         m.fit(Xtr, y_tr, sample_weight=w_tr)
         p = m.predict_proba(Xte)[:, 1]
         p_c = np.clip(p, 1e-6, 1 - 1e-6)
@@ -109,7 +114,12 @@ def _setup_logging(verbosity: int) -> None:
 
 def cmd_run(args: argparse.Namespace) -> int:
     features = pd.read_parquet(args.features)
-    df = walk_forward(features, args.start, args.end)
+    xgb_params = None
+    if args.xgb_params and Path(args.xgb_params).exists():
+        with open(args.xgb_params) as f:
+            xgb_params = json.load(f)
+        logger.info("Using XGB params: %s", xgb_params)
+    df = walk_forward(features, args.start, args.end, xgb_params=xgb_params)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(out, index=False)
@@ -136,6 +146,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     r.add_argument("--start", required=True, help="first basho to predict (e.g. 202301)")
     r.add_argument("--end", default=None, help="last basho to predict (inclusive)")
     r.add_argument("--out", default="runs/backtest.parquet")
+    r.add_argument("--xgb-params", default=None, help="path to JSON of XGB best params")
     r.add_argument("-v", "--verbose", action="count", default=1)
     r.set_defaults(func=cmd_run)
     return p

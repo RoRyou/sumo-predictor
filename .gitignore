@@ -13,18 +13,18 @@ data/cache/
 *.csv
 !data/sample/*.csv
 
-# Models
+# Models / training artifacts (root-level only — keep `src/models/` package!)
 *.pt
 *.pth
 *.onnx
 *.bin
 *.safetensors
-models/
-checkpoints/
+/models/
+/checkpoints/
 lightning_logs/
 mlruns/
 wandb/
-runs/
+/runs/
 
 # Python
 __pycache__/

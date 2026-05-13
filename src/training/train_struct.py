@@ -158,6 +158,114 @@ def make_xgb(params: dict[str, Any] | None = None):
     return xgb.XGBClassifier(**base)
 
 
+# ---------------------------------------------------------------------- #
+# T8 — Focal-loss XGBoost (custom objective)
+# ---------------------------------------------------------------------- #
+def _focal_obj_factory(gamma: float = 2.0, alpha: float = 0.5):
+    """Return (grad, hess) function suitable for XGBoost custom obj.
+
+    Implements focal loss for binary classification with the standard
+    derivation:  L = -alpha * (1-p)^gamma * y log p
+                    -(1-alpha) * p^gamma * (1-y) log(1-p)
+    where p = sigmoid(z).  We compute first/second derivatives wrt z.
+    """
+
+    def _obj(preds, dtrain):  # preds is the raw margin (xgb pre-sigmoid)
+        y = dtrain.get_label()
+        p = 1.0 / (1.0 + np.exp(-preds))
+        eps = 1e-7
+        p = np.clip(p, eps, 1 - eps)
+        # alpha-weight per class
+        a = np.where(y == 1, alpha, 1 - alpha)
+        # focal modulation
+        # dL/dp for positive: -alpha * (1-p)^gamma / p + alpha*gamma*(1-p)^(gamma-1) * log p
+        # use chain rule via z (z = logit): dp/dz = p(1-p)
+        # combined gradient/hessian (standard focal-loss derivation):
+        pt = np.where(y == 1, p, 1 - p)
+        # gradient wrt z
+        # -(1-pt)^gamma * (y - p) approximation hides alpha; do the full form:
+        # See: Lin et al. 2017, eqs (3)-(5)
+        sign = np.where(y == 1, 1.0, -1.0)
+        # dL/dz = a * sign * (1-pt)^gamma * ( gamma * pt * log(pt) + pt - 1 ) * sign
+        # Simplify: dL/dz = a * (1-pt)^gamma * (gamma * pt * log(pt) + pt - 1) * (-sign)
+        # but easier: numerically compute via standard formula
+        modulator = (1 - pt) ** gamma
+        # gradient:
+        grad = a * modulator * (gamma * pt * np.log(np.clip(pt, eps, 1.0)) + pt - 1) * (-sign)
+        # hessian (positive approximation):
+        hess = a * modulator * pt * (1 - pt) * (
+            gamma * (1 - pt) * (1 - gamma * np.log(np.clip(pt, eps, 1.0)) * pt / np.clip(1 - pt, eps, 1.0))
+            + 1
+        )
+        hess = np.clip(hess, 1e-6, None)
+        return grad, hess
+
+    return _obj
+
+
+def make_xgb_focal(params: dict[str, Any] | None = None):
+    """XGB Booster wrapper with custom focal-loss objective.
+
+    Returns a thin estimator that mimics ``XGBClassifier`` interface
+    (``fit`` / ``predict_proba``) so it plugs into the stacking loop.
+    """
+    import xgboost as xgb
+
+    base = dict(
+        learning_rate=0.05,
+        max_depth=5,
+        n_estimators=500,
+        subsample=0.85,
+        colsample_bytree=0.85,
+        reg_lambda=1.0,
+        n_jobs=-1,
+        random_state=45,
+        tree_method="hist",
+        gamma_focal=2.0,
+        alpha_focal=0.5,
+    )
+    base.update(params or {})
+    gamma_focal = base.pop("gamma_focal")
+    alpha_focal = base.pop("alpha_focal")
+    n_estimators = base.pop("n_estimators")
+
+    class _FocalXGB:
+        def __init__(self) -> None:
+            self.params = base
+            self.gamma = gamma_focal
+            self.alpha = alpha_focal
+            self.n_estimators = n_estimators
+            self.booster_ = None
+
+        def fit(self, X, y, sample_weight=None):
+            dtrain = xgb.DMatrix(np.asarray(X), label=np.asarray(y), weight=sample_weight)
+            obj = _focal_obj_factory(self.gamma, self.alpha)
+            xgb_params = {
+                "eta": self.params.get("learning_rate", 0.05),
+                "max_depth": self.params.get("max_depth", 5),
+                "subsample": self.params.get("subsample", 0.85),
+                "colsample_bytree": self.params.get("colsample_bytree", 0.85),
+                "lambda": self.params.get("reg_lambda", 1.0),
+                "tree_method": self.params.get("tree_method", "hist"),
+                "nthread": self.params.get("n_jobs", -1),
+                "seed": self.params.get("random_state", 45),
+                "disable_default_eval_metric": 1,
+                "base_score": 0.5,
+            }
+            self.booster_ = xgb.train(
+                xgb_params, dtrain, num_boost_round=self.n_estimators, obj=obj,
+            )
+            return self
+
+        def predict_proba(self, X):
+            d = xgb.DMatrix(np.asarray(X))
+            raw = self.booster_.predict(d, output_margin=True)
+            p = 1.0 / (1.0 + np.exp(-raw))
+            return np.column_stack([1 - p, p])
+
+    return _FocalXGB()
+
+
 def make_lgbm(params: dict[str, Any] | None = None):
     import lightgbm as lgb
 
@@ -199,6 +307,7 @@ BASE_MODEL_BUILDERS = {
     "xgb": make_xgb,
     "lgbm": make_lgbm,
     "cat": make_catboost,
+    "xgb_focal": make_xgb_focal,
 }
 
 
@@ -222,6 +331,7 @@ def train_stack(
     X_val: pd.DataFrame,
     X_test: pd.DataFrame,
     base_models: tuple[str, ...] = ("xgb", "lgbm", "cat"),
+    model_params: dict[str, dict[str, Any]] | None = None,
     n_splits: int = 5,
     random_state: int = 42,
 ) -> StackResult:
@@ -229,6 +339,7 @@ def train_stack(
     base_oof: dict[str, np.ndarray] = {}
     base_val: dict[str, np.ndarray] = {}
     base_test: dict[str, np.ndarray] = {}
+    model_params = model_params or {}
 
     kf = KFold(n_splits=n_splits, shuffle=True, random_state=random_state)
     for name in base_models:
@@ -237,9 +348,9 @@ def train_stack(
         val_acc = np.zeros(len(X_val), dtype=float)
         test_acc = np.zeros(len(X_test), dtype=float)
         for fold, (tr_idx, va_idx) in enumerate(kf.split(X_tr)):
-            model = builder()
+            model = builder(model_params.get(name))
             fit_kwargs: dict[str, Any] = {}
-            if name in ("xgb", "lgbm", "cat"):
+            if name in ("xgb", "lgbm", "cat", "xgb_focal"):
                 fit_kwargs["sample_weight"] = w_tr[tr_idx]
             model.fit(X_tr.iloc[tr_idx], y_tr[tr_idx], **fit_kwargs)
             oof[va_idx] = model.predict_proba(X_tr.iloc[va_idx])[:, 1]
@@ -325,7 +436,18 @@ def run(
     test_start: str,
     out_dir: Path,
     augment: bool = False,
+    augment_before_te: bool = True,
+    add_stage: bool = True,
+    add_kimarite_matchup: bool = True,
+    base_models: tuple[str, ...] = ("xgb", "lgbm", "cat"),
+    xgb_params_path: Path | None = None,
 ) -> dict[str, Any]:
+    from src.features.structural import (
+        KimariteMatchupTable,
+        add_stage_features,
+        symmetric_augment,
+    )
+
     df = pd.read_parquet(features_path)
     df["bashoId"] = df["bashoId"].astype(str)
     logger.info("Loaded %d rows from %s", len(df), features_path)
@@ -337,20 +459,44 @@ def run(
     split = time_split(df, val_basho, test_start)
     logger.info(repr(split))
 
-    # T1: Target encoding
+    train_df = split.train
+    val_df = split.val
+    test_df = split.test
+
+    # T15: Basho stage features (deterministic, no leakage)
+    if add_stage:
+        train_df = add_stage_features(train_df)
+        val_df = add_stage_features(val_df)
+        test_df = add_stage_features(test_df)
+        logger.info("Added T15 stage features.")
+
+    # T7: Kimarite matchup table — fit on TRAIN only
+    if add_kimarite_matchup:
+        km = KimariteMatchupTable().fit(train_df)
+        train_df = km.transform(train_df)
+        val_df = km.transform(val_df)
+        test_df = km.transform(test_df)
+        logger.info("Added T7 kimarite_matchup_wr. table size=%d", len(km.lookup_))
+
+    # T6 (fix): symmetric augmentation BEFORE target encoding so the TE
+    # sees both directions and the mirrored rows get their *own* encoded
+    # categorical values (no leakage from the original direction).
+    if augment and augment_before_te:
+        train_df = symmetric_augment(train_df)
+        logger.info("Symmetric augment BEFORE TE: train rows = %d", len(train_df))
+
+    # T1: Target encoding (fit on train, transform val/test)
     te = KFoldTargetEncoder(CATEGORICAL_COLS)
-    y_tr = split.train[LABEL_COL].to_numpy()
-    X_tr_full = te.fit_transform(split.train, y_tr)
-    X_val_full = te.transform(split.val)
-    X_test_full = te.transform(split.test)
+    y_tr = train_df[LABEL_COL].to_numpy()
+    X_tr_full = te.fit_transform(train_df, y_tr)
+    X_val_full = te.transform(val_df)
+    X_test_full = te.transform(test_df)
 
-    # Optional T6 symmetric augmentation on train only
-    if augment:
-        from src.features.structural import symmetric_augment
-
+    # Legacy path: augment AFTER TE — kept for ablation comparison
+    if augment and not augment_before_te:
         X_tr_full = symmetric_augment(X_tr_full)
         y_tr = X_tr_full[LABEL_COL].to_numpy()
-        logger.info("After symmetric augment: train rows = %d", len(X_tr_full))
+        logger.info("Symmetric augment AFTER TE: train rows = %d", len(X_tr_full))
 
     cols = feature_cols(X_tr_full)
     logger.info("Using %d numeric features", len(cols))
@@ -359,11 +505,23 @@ def run(
     X_val = X_val_full[cols].fillna(-9999.0) if len(X_val_full) else X_val_full[cols]
     X_test = X_test_full[cols].fillna(-9999.0) if len(X_test_full) else X_test_full[cols]
     w_tr = X_tr_full[WEIGHT_COL].to_numpy() if WEIGHT_COL in X_tr_full.columns else np.ones(len(X_tr))
-    y_val = split.val[LABEL_COL].to_numpy() if len(split.val) else np.array([])
-    y_test = split.test[LABEL_COL].to_numpy() if len(split.test) else np.array([])
+    y_val = val_df[LABEL_COL].to_numpy() if len(val_df) else np.array([])
+    y_test = test_df[LABEL_COL].to_numpy() if len(test_df) else np.array([])
+
+    # Optuna-tuned XGB params (if available)
+    model_params: dict[str, dict[str, Any]] = {}
+    if xgb_params_path is not None and Path(xgb_params_path).exists():
+        with open(xgb_params_path) as f:
+            best = json.load(f)
+        model_params["xgb"] = best
+        logger.info("Loaded XGB best params from %s: %s", xgb_params_path, best)
 
     # T4: Stack
-    stack = train_stack(X_tr, y_tr, w_tr, X_val, X_test)
+    stack = train_stack(
+        X_tr, y_tr, w_tr, X_val, X_test,
+        base_models=base_models,
+        model_params=model_params,
+    )
 
     # T5: Calibration (Platt) on val
     cal_val_proba = stack.val_proba
@@ -387,8 +545,8 @@ def run(
     metrics["val_cal"] = report_metrics(y_val, cal_val_proba, "val-calibrated")
     metrics["test_raw"] = report_metrics(y_test, stack.test_proba, "test-stacked")
     metrics["test_cal"] = report_metrics(y_test, cal_test_proba, "test-calibrated")
-    metrics["test_by_tier"] = tier_breakdown(split.test, cal_test_proba)
-    metrics["meta_coefs"] = {n: float(c) for n, c in zip(("xgb", "lgbm", "cat"), stack.meta.coef_[0])}
+    metrics["test_by_tier"] = tier_breakdown(test_df, cal_test_proba)
+    metrics["meta_coefs"] = {n: float(c) for n, c in zip(base_models, stack.meta.coef_[0])}
 
     out_dir.mkdir(parents=True, exist_ok=True)
     with open(out_dir / "metrics.json", "w") as f:
@@ -420,6 +578,11 @@ def cmd_run(args: argparse.Namespace) -> int:
         test_start=args.test_start,
         out_dir=Path(args.out_dir),
         augment=args.augment,
+        augment_before_te=not args.augment_after_te,
+        add_stage=not args.no_stage,
+        add_kimarite_matchup=not args.no_kimarite,
+        base_models=tuple(args.base_models),
+        xgb_params_path=Path(args.xgb_params) if args.xgb_params else None,
     )
     print(json.dumps(metrics, indent=2, default=str))
     return 0
@@ -434,6 +597,15 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     r.add_argument("--test-start", required=True, help="first basho of test set (e.g. 202401)")
     r.add_argument("--out-dir", default="runs/struct_v1")
     r.add_argument("--augment", action="store_true", help="apply symmetric augmentation")
+    r.add_argument("--augment-after-te", action="store_true",
+                   help="(ablation) apply augment AFTER target encoding [old behaviour]")
+    r.add_argument("--no-stage", action="store_true", help="skip T15 stage features")
+    r.add_argument("--no-kimarite", action="store_true", help="skip T7 kimarite matchup table")
+    r.add_argument("--base-models", nargs="+",
+                   default=["xgb", "lgbm", "cat"],
+                   help="base models to stack (xgb lgbm cat xgb_focal)")
+    r.add_argument("--xgb-params", default=None,
+                   help="path to JSON of XGB best params (from Optuna)")
     r.add_argument("-v", "--verbose", action="count", default=1)
     r.set_defaults(func=cmd_run)
     return p
