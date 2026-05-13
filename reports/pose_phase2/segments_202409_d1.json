@@ -1,0 +1,961 @@
+{
+  "video_id": "202409_d1",
+  "segments": [
+    {
+      "t_start": 11.26125,
+      "t_end": 14.76475,
+      "dominant_caption": "Morita Hiro",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 14.76475,
+      "t_end": 18.268250000000002,
+      "dominant_caption": "5 Sumo Surge September -",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 27.277250000000002,
+      "t_end": 30.363667,
+      "dominant_caption": "TERUNOFUJI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "TERUNOFUJI",
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 30.363667,
+      "t_end": 45.011633,
+      "dominant_caption": "TERUNOFUJI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "TERUNOFUJI",
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 48.815433,
+      "t_end": 59.392667,
+      "dominant_caption": "KOTOZAKURA",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "KOTOZAKURA",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 1,
+        "matchNo": 21,
+        "eastId": 20,
+        "westId": 24,
+        "winnerId": 20,
+        "kimarite": "tsukiotoshi",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 59.392667,
+      "t_end": 65.632233,
+      "dominant_caption": "KOTOZAKURA",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "KOTOZAKURA",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 2,
+        "matchNo": 20,
+        "eastId": 20,
+        "westId": 37,
+        "winnerId": 20,
+        "kimarite": "yorikiri",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 65.632233,
+      "t_end": 70.8708,
+      "dominant_caption": "KOTOZAKURA",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "KOTOZAKURA",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 3,
+        "matchNo": 21,
+        "eastId": 20,
+        "westId": 21,
+        "winnerId": 20,
+        "kimarite": "oshidashi",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 70.8708,
+      "t_end": 74.240833,
+      "dominant_caption": "KOTOZAKURA",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "KOTOZAKURA",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 4,
+        "matchNo": 19,
+        "eastId": 20,
+        "westId": 74,
+        "winnerId": 20,
+        "kimarite": "yorikiri",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 74.240833,
+      "t_end": 78.6786,
+      "dominant_caption": "KOTOZAKURA",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "KOTOZAKURA",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 6,
+        "matchNo": 19,
+        "eastId": 20,
+        "westId": 26,
+        "winnerId": 20,
+        "kimarite": "yorikiri",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 82.3823,
+      "t_end": 87.754333,
+      "dominant_caption": "HOSHORYU",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "HOSHORYU",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 2,
+        "matchNo": 21,
+        "eastId": 9,
+        "westId": 19,
+        "winnerId": 19,
+        "kimarite": "yorikiri",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 89.322567,
+      "t_end": 92.725967,
+      "dominant_caption": "HOSHORYU",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "HOSHORYU",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 5,
+        "matchNo": 19,
+        "eastId": 26,
+        "westId": 19,
+        "winnerId": 19,
+        "kimarite": "yorikiri",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 92.725967,
+      "t_end": 97.097,
+      "dominant_caption": "HOSHORYU",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "HOSHORYU",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 7,
+        "matchNo": 19,
+        "eastId": 33,
+        "westId": 19,
+        "winnerId": 19,
+        "kimarite": "oshidashi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 97.097,
+      "t_end": 102.368933,
+      "dominant_caption": "HOSHORYU",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "HOSHORYU",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 8,
+        "matchNo": 20,
+        "eastId": 13,
+        "westId": 19,
+        "winnerId": 19,
+        "kimarite": "kubinage",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 102.368933,
+      "t_end": 107.4073,
+      "dominant_caption": "HOSHORYU",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "HOSHORYU",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 9,
+        "matchNo": 19,
+        "eastId": 24,
+        "westId": 19,
+        "winnerId": 19,
+        "kimarite": "sukuinage",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 114.0139,
+      "t_end": 117.11699999999999,
+      "dominant_caption": "HOSHORYU",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "HOSHORYU",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 10,
+        "matchNo": 20,
+        "eastId": 8,
+        "westId": 19,
+        "winnerId": 19,
+        "kimarite": "oshitaoshi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 117.11699999999999,
+      "t_end": 120.487033,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 1,
+        "matchNo": 18,
+        "eastId": 74,
+        "westId": 8850,
+        "winnerId": 8850,
+        "kimarite": "hatakikomi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 120.487033,
+      "t_end": 133.099633,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 2,
+        "matchNo": 19,
+        "eastId": 21,
+        "westId": 8850,
+        "winnerId": 8850,
+        "kimarite": "tsukidashi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 133.967167,
+      "t_end": 139.405933,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 3,
+        "matchNo": 16,
+        "eastId": 41,
+        "westId": 8850,
+        "winnerId": 8850,
+        "kimarite": "yorikiri",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 139.405933,
+      "t_end": 144.911433,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 4,
+        "matchNo": 17,
+        "eastId": 9,
+        "westId": 8850,
+        "winnerId": 8850,
+        "kimarite": "oshidashi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 147.881067,
+      "t_end": 152.418933,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 5,
+        "matchNo": 18,
+        "eastId": 37,
+        "westId": 8850,
+        "winnerId": 8850,
+        "kimarite": "oshidashi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 152.418933,
+      "t_end": 156.789967,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 6,
+        "matchNo": 16,
+        "eastId": 33,
+        "westId": 8850,
+        "winnerId": 8850,
+        "kimarite": "oshidashi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 166.432933,
+      "t_end": 171.638133,
+      "dominant_caption": "ONOKATSU",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOKATSU",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 3,
+        "matchNo": 3,
+        "eastId": 44,
+        "westId": 8853,
+        "winnerId": 8853,
+        "kimarite": "yorikiri",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 172.305467,
+      "t_end": 184.918067,
+      "dominant_caption": "ONOKATSU",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOKATSU",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 6,
+        "matchNo": 2,
+        "eastId": 66,
+        "westId": 8853,
+        "winnerId": 8853,
+        "kimarite": "yorikiri",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 187.720867,
+      "t_end": 191.925067,
+      "dominant_caption": "ONOKATSU",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOKATSU",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 8,
+        "matchNo": 3,
+        "eastId": 52,
+        "westId": 8853,
+        "winnerId": 8853,
+        "kimarite": "yorikiri",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 191.925067,
+      "t_end": 197.7976,
+      "dominant_caption": "ONOKATSU",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOKATSU",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 10,
+        "matchNo": 3,
+        "eastId": 8853,
+        "westId": 50,
+        "winnerId": 8853,
+        "kimarite": "yorikiri",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 197.7976,
+      "t_end": 201.4012,
+      "dominant_caption": "ONOKATSU",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOKATSU",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 13,
+        "matchNo": 2,
+        "eastId": 101,
+        "westId": 8853,
+        "winnerId": 8853,
+        "kimarite": "oshidashi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 203.770233,
+      "t_end": 207.874333,
+      "dominant_caption": "ONOKATSU",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOKATSU",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202409",
+        "day": 14,
+        "matchNo": 5,
+        "eastId": 11,
+        "westId": 8853,
+        "winnerId": 8853,
+        "kimarite": "yorikiri",
+        "y_east": 0
+      }
+    }
+  ],
+  "meta": {
+    "ocr_segments": [
+      {
+        "t_start": 0.0,
+        "t_end": 0.5005000000000001,
+        "dominant_caption": "",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 2,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 0.5005000000000001,
+        "t_end": 1.2512500000000002,
+        "dominant_caption": "LSE4 M",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 1.2512500000000002,
+        "t_end": 1.7517500000000001,
+        "dominant_caption": "ENDO SUM",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 1.7517500000000001,
+        "t_end": 2.25225,
+        "dominant_caption": "SUM ENDO",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 2.25225,
+        "t_end": 2.75275,
+        "dominant_caption": "SUM SUMO ENDO",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 2.75275,
+        "t_end": 4.254250000000001,
+        "dominant_caption": "SUMO SUM ENDO",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 5,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 4.254250000000001,
+        "t_end": 7.75775,
+        "dominant_caption": "abuy",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 9,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 7.75775,
+        "t_end": 10.5105,
+        "dominant_caption": "Morita Miro",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 2,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 10.5105,
+        "t_end": 11.26125,
+        "dominant_caption": "Hiro Morita",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 11.26125,
+        "t_end": 14.76475,
+        "dominant_caption": "Morita Hiro",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 13,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 14.76475,
+        "t_end": 18.268250000000002,
+        "dominant_caption": "5 Sumo Surge September -",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 18.268250000000002,
+        "t_end": 18.76875,
+        "dominant_caption": "5 Surge Sumo September _",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 18.76875,
+        "t_end": 19.26925,
+        "dominant_caption": "5 Sumo Surge September =",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 19.26925,
+        "t_end": 19.769750000000002,
+        "dominant_caption": "5 Surge Sumo September _",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 19.769750000000002,
+        "t_end": 20.27025,
+        "dominant_caption": "5 Sumo Surge September _",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 20.27025,
+        "t_end": 21.021,
+        "dominant_caption": "'s Surge Sumo September _",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 2,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 21.021,
+        "t_end": 21.77175,
+        "dominant_caption": "'5 Sumo Surge September _",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 21.77175,
+        "t_end": 22.27225,
+        "dominant_caption": "L 5 Surge Sumo September",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 22.27225,
+        "t_end": 27.277250000000002,
+        "dominant_caption": "A '5 Sumo' Surge September =",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 19,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 27.277250000000002,
+        "t_end": 46.5465,
+        "dominant_caption": "TERUNOFUJI",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 58,
+        "matchup_names": null,
+        "lone_name": "TERUNOFUJI"
+      },
+      {
+        "t_start": 46.5465,
+        "t_end": 80.08,
+        "dominant_caption": "KOTOZAKURA",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 76,
+        "matchup_names": null,
+        "lone_name": "KOTOZAKURA"
+      },
+      {
+        "t_start": 80.08,
+        "t_end": 117.11699999999999,
+        "dominant_caption": "HOSHORYU",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 72,
+        "matchup_names": null,
+        "lone_name": "HOSHORYU"
+      },
+      {
+        "t_start": 117.11699999999999,
+        "t_end": 160.91075,
+        "dominant_caption": "ONOSATO",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 103,
+        "matchup_names": null,
+        "lone_name": "ONOSATO"
+      },
+      {
+        "t_start": 160.91075,
+        "t_end": 210.0098,
+        "dominant_caption": "ONOKATSU",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 47,
+        "matchup_names": null,
+        "lone_name": "ONOKATSU"
+      }
+    ],
+    "visual_segments": [
+      {
+        "t_start": 0.0,
+        "t_end": 1.5015
+      },
+      {
+        "t_start": 1.5015,
+        "t_end": 3.069733
+      },
+      {
+        "t_start": 3.069733,
+        "t_end": 4.938267
+      },
+      {
+        "t_start": 4.938267,
+        "t_end": 6.6066
+      },
+      {
+        "t_start": 6.6066,
+        "t_end": 7.540867
+      },
+      {
+        "t_start": 7.540867,
+        "t_end": 24.891533
+      },
+      {
+        "t_start": 24.891533,
+        "t_end": 30.363667
+      },
+      {
+        "t_start": 30.363667,
+        "t_end": 45.011633
+      },
+      {
+        "t_start": 45.011633,
+        "t_end": 48.815433
+      },
+      {
+        "t_start": 48.815433,
+        "t_end": 59.392667
+      },
+      {
+        "t_start": 59.392667,
+        "t_end": 65.632233
+      },
+      {
+        "t_start": 65.632233,
+        "t_end": 70.8708
+      },
+      {
+        "t_start": 70.8708,
+        "t_end": 74.240833
+      },
+      {
+        "t_start": 74.240833,
+        "t_end": 78.6786
+      },
+      {
+        "t_start": 78.6786,
+        "t_end": 80.146733
+      },
+      {
+        "t_start": 80.146733,
+        "t_end": 81.014267
+      },
+      {
+        "t_start": 81.014267,
+        "t_end": 82.3823
+      },
+      {
+        "t_start": 82.3823,
+        "t_end": 87.754333
+      },
+      {
+        "t_start": 87.754333,
+        "t_end": 89.322567
+      },
+      {
+        "t_start": 89.322567,
+        "t_end": 92.725967
+      },
+      {
+        "t_start": 92.725967,
+        "t_end": 97.097
+      },
+      {
+        "t_start": 97.097,
+        "t_end": 102.368933
+      },
+      {
+        "t_start": 102.368933,
+        "t_end": 107.4073
+      },
+      {
+        "t_start": 107.4073,
+        "t_end": 110.0099
+      },
+      {
+        "t_start": 110.0099,
+        "t_end": 111.077633
+      },
+      {
+        "t_start": 111.077633,
+        "t_end": 114.0139
+      },
+      {
+        "t_start": 114.0139,
+        "t_end": 120.487033
+      },
+      {
+        "t_start": 120.487033,
+        "t_end": 133.099633
+      },
+      {
+        "t_start": 133.099633,
+        "t_end": 133.967167
+      },
+      {
+        "t_start": 133.967167,
+        "t_end": 139.405933
+      },
+      {
+        "t_start": 139.405933,
+        "t_end": 144.911433
+      },
+      {
+        "t_start": 144.911433,
+        "t_end": 145.812333
+      },
+      {
+        "t_start": 145.812333,
+        "t_end": 147.881067
+      },
+      {
+        "t_start": 147.881067,
+        "t_end": 152.418933
+      },
+      {
+        "t_start": 152.418933,
+        "t_end": 156.789967
+      },
+      {
+        "t_start": 156.789967,
+        "t_end": 157.624133
+      },
+      {
+        "t_start": 157.624133,
+        "t_end": 160.5604
+      },
+      {
+        "t_start": 160.5604,
+        "t_end": 161.2611
+      },
+      {
+        "t_start": 161.2611,
+        "t_end": 163.496667
+      },
+      {
+        "t_start": 163.496667,
+        "t_end": 166.432933
+      },
+      {
+        "t_start": 166.432933,
+        "t_end": 171.638133
+      },
+      {
+        "t_start": 171.638133,
+        "t_end": 172.305467
+      },
+      {
+        "t_start": 172.305467,
+        "t_end": 184.918067
+      },
+      {
+        "t_start": 184.918067,
+        "t_end": 186.719867
+      },
+      {
+        "t_start": 186.719867,
+        "t_end": 187.720867
+      },
+      {
+        "t_start": 187.720867,
+        "t_end": 191.925067
+      },
+      {
+        "t_start": 191.925067,
+        "t_end": 197.7976
+      },
+      {
+        "t_start": 197.7976,
+        "t_end": 201.4012
+      },
+      {
+        "t_start": 201.4012,
+        "t_end": 203.770233
+      },
+      {
+        "t_start": 203.770233,
+        "t_end": 207.874333
+      },
+      {
+        "t_start": 207.874333,
+        "t_end": 210.0098
+      }
+    ],
+    "duration": 210.0098
+  },
+  "alignment_basho": "202409"
+}

@@ -1,0 +1,855 @@
+{
+  "video_id": "202407_wrap",
+  "segments": [
+    {
+      "t_start": 0.0,
+      "t_end": 3.75375,
+      "dominant_caption": "",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 3.75375,
+      "t_end": 9.009,
+      "dominant_caption": "Hiro Morita",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 13.763750000000002,
+      "t_end": 21.271250000000002,
+      "dominant_caption": "Hiro Morita",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 23.5235,
+      "t_end": 26.7267,
+      "dominant_caption": "TThe July = Spectacie Sumo Battles",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 33.28325,
+      "t_end": 36.78675,
+      "dominant_caption": "The July Sumo Triumphs and Battles",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 41.5415,
+      "t_end": 45.111733,
+      "dominant_caption": "White Bear",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 45.111733,
+      "t_end": 50.5505,
+      "dominant_caption": "White Bear",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 50.5505,
+      "t_end": 54.80475,
+      "dominant_caption": "White Bear",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 54.80475,
+      "t_end": 58.2582,
+      "dominant_caption": "TERUNOFUJI 2)6+",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "TERUNOFUJI",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202407",
+        "day": 1,
+        "matchNo": 21,
+        "eastId": 45,
+        "westId": 24,
+        "winnerId": 45,
+        "kimarite": "yorikiri",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 62.062,
+      "t_end": 71.337933,
+      "dominant_caption": "TERUNOFUJI 2)6+",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "TERUNOFUJI",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202407",
+        "day": 2,
+        "matchNo": 21,
+        "eastId": 45,
+        "westId": 38,
+        "winnerId": 45,
+        "kimarite": "yorikiri",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 71.337933,
+      "t_end": 89.956533,
+      "dominant_caption": "TERUNOFUJI 2)6+",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "TERUNOFUJI",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202407",
+        "day": 3,
+        "matchNo": 20,
+        "eastId": 45,
+        "westId": 13,
+        "winnerId": 45,
+        "kimarite": "yorikiri",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 92.4924,
+      "t_end": 98.098,
+      "dominant_caption": "TERUNOFUJI 2)6+",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "TERUNOFUJI",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202407",
+        "day": 4,
+        "matchNo": 20,
+        "eastId": 45,
+        "westId": 26,
+        "winnerId": 45,
+        "kimarite": "yorikiri",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 98.098,
+      "t_end": 102.6025,
+      "dominant_caption": "m 1Oth championship:",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 105.238467,
+      "t_end": 113.279833,
+      "dominant_caption": "m 1Oth championship:",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 114.681233,
+      "t_end": 117.8177,
+      "dominant_caption": "m 1Oth championship:",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 117.8177,
+      "t_end": 121.387933,
+      "dominant_caption": "m 1Oth championship:",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 121.387933,
+      "t_end": 125.0249,
+      "dominant_caption": "m 1Oth championship:",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 141.14100000000002,
+      "t_end": 146.679867,
+      "dominant_caption": "so please keep cheering for meb",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 153.8537,
+      "t_end": 156.9568,
+      "dominant_caption": "TAKANOSHO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "TAKANOSHO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202407",
+        "day": 3,
+        "matchNo": 11,
+        "eastId": 37,
+        "westId": 41,
+        "winnerId": 37,
+        "kimarite": "oshidashi",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 161.4613,
+      "t_end": 166.833333,
+      "dominant_caption": "TAKANOSHO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "TAKANOSHO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202407",
+        "day": 4,
+        "matchNo": 11,
+        "eastId": 10,
+        "westId": 37,
+        "winnerId": 37,
+        "kimarite": "fusen",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 168.41825,
+      "t_end": 171.42125,
+      "dominant_caption": "TAKANOSHO Ror",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 173.506667,
+      "t_end": 184.8847,
+      "dominant_caption": "TAKANOSHO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "TAKANOSHO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202407",
+        "day": 5,
+        "matchNo": 11,
+        "eastId": 37,
+        "westId": 15,
+        "winnerId": 37,
+        "kimarite": "oshidashi",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 187.6875,
+      "t_end": 191.357833,
+      "dominant_caption": "thoughy \"Wacjuschappened?\"",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 193.826967,
+      "t_end": 197.9978,
+      "dominant_caption": "thoughy \"Wacjuschappened?\"",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 199.766233,
+      "t_end": 202.95274999999998,
+      "dominant_caption": "thoughy \"Wacjuschappened?\"",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    }
+  ],
+  "meta": {
+    "ocr_segments": [
+      {
+        "t_start": 0.0,
+        "t_end": 3.75375,
+        "dominant_caption": "",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 15,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 3.75375,
+        "t_end": 9.009,
+        "dominant_caption": "Hiro Morita",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 6,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 9.009,
+        "t_end": 11.26125,
+        "dominant_caption": "Morita Hiro",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 3,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 11.26125,
+        "t_end": 12.76275,
+        "dominant_caption": "Hiro Morita",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 3,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 12.76275,
+        "t_end": 13.763750000000002,
+        "dominant_caption": "Morita Hiro",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 13.763750000000002,
+        "t_end": 21.271250000000002,
+        "dominant_caption": "Hiro Morita",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 29,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 21.271250000000002,
+        "t_end": 28.778750000000002,
+        "dominant_caption": "TThe July = Spectacie Sumo Battles",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 28.778750000000002,
+        "t_end": 29.5295,
+        "dominant_caption": "The Spectacie Sumo Triumphs July and Battles",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 2,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 29.5295,
+        "t_end": 33.28325,
+        "dominant_caption": "The July Spectact Sumo Triumphs and Battles",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 13,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 33.28325,
+        "t_end": 36.78675,
+        "dominant_caption": "The July Sumo Triumphs and Battles",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 36.78675,
+        "t_end": 41.5415,
+        "dominant_caption": "The = Spectacie Sumo Triumphs July and Battles",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 18,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 41.5415,
+        "t_end": 54.80475,
+        "dominant_caption": "White Bear",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 35,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 54.80475,
+        "t_end": 98.098,
+        "dominant_caption": "TERUNOFUJI 2)6+",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 138,
+        "matchup_names": null,
+        "lone_name": "TERUNOFUJI"
+      },
+      {
+        "t_start": 98.098,
+        "t_end": 132.88275,
+        "dominant_caption": "m 1Oth championship:",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 132.88275,
+        "t_end": 133.63350000000003,
+        "dominant_caption": "uhanks to your suppoutz Iwwas able to achieve 1oth championship",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 2,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 133.63350000000003,
+        "t_end": 134.38425,
+        "dominant_caption": "doth championship",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 134.38425,
+        "t_end": 135.88575,
+        "dominant_caption": "vhanks to your suppoutz Iwas able to achieve m 1Oth championship:",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 5,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 135.88575,
+        "t_end": 138.38825,
+        "dominant_caption": "Hlget my body readyfer Che next tournament and continue t0 do mybest,",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 5,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 138.38825,
+        "t_end": 139.88975,
+        "dominant_caption": "and continue t0 do mybest,",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 139.88975,
+        "t_end": 141.14100000000002,
+        "dominant_caption": "Hget mybody readyfor Che next tournamenc and continue t0 do mybest,",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 4,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 141.14100000000002,
+        "t_end": 153.90375,
+        "dominant_caption": "so please keep cheering for meb",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 47,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 153.90375,
+        "t_end": 168.41825,
+        "dominant_caption": "TAKANOSHO",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 11,
+        "matchup_names": null,
+        "lone_name": "TAKANOSHO"
+      },
+      {
+        "t_start": 168.41825,
+        "t_end": 171.42125,
+        "dominant_caption": "TAKANOSHO Ror",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 171.42125,
+        "t_end": 186.43625,
+        "dominant_caption": "TAKANOSHO",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 59,
+        "matchup_names": null,
+        "lone_name": "TAKANOSHO"
+      },
+      {
+        "t_start": 186.43625,
+        "t_end": 202.95274999999998,
+        "dominant_caption": "thoughy \"Wacjuschappened?\"",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 7,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 202.95274999999998,
+        "t_end": 205.45525,
+        "dominant_caption": "At the momencolvctory, Ithought, \"Whacjust happened?\"",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 3,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 205.45525,
+        "t_end": 206.95675,
+        "dominant_caption": "Icoulkdhfbelieve it.",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 3,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 206.95675,
+        "t_end": 208.20800000000003,
+        "dominant_caption": "I couldhfbelieve it:",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 2,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 208.20800000000003,
+        "t_end": 208.95875,
+        "dominant_caption": "when a cushion Chrownby a fan hit me",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 208.95875,
+        "t_end": 210.0098,
+        "dominant_caption": "suapped badkoo reallty when a cushion Chrowby a fan hit mg",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 2,
+        "matchup_names": null,
+        "lone_name": null
+      }
+    ],
+    "visual_segments": [
+      {
+        "t_start": 0.0,
+        "t_end": 11.745067
+      },
+      {
+        "t_start": 11.745067,
+        "t_end": 23.5235
+      },
+      {
+        "t_start": 23.5235,
+        "t_end": 26.7267
+      },
+      {
+        "t_start": 26.7267,
+        "t_end": 28.4284
+      },
+      {
+        "t_start": 28.4284,
+        "t_end": 30.363667
+      },
+      {
+        "t_start": 30.363667,
+        "t_end": 33.3333
+      },
+      {
+        "t_start": 33.3333,
+        "t_end": 37.370667
+      },
+      {
+        "t_start": 37.370667,
+        "t_end": 38.038
+      },
+      {
+        "t_start": 38.038,
+        "t_end": 39.072367
+      },
+      {
+        "t_start": 39.072367,
+        "t_end": 41.608233
+      },
+      {
+        "t_start": 41.608233,
+        "t_end": 45.111733
+      },
+      {
+        "t_start": 45.111733,
+        "t_end": 50.5505
+      },
+      {
+        "t_start": 50.5505,
+        "t_end": 58.2582
+      },
+      {
+        "t_start": 58.2582,
+        "t_end": 59.225833
+      },
+      {
+        "t_start": 59.225833,
+        "t_end": 59.826433
+      },
+      {
+        "t_start": 59.826433,
+        "t_end": 62.062
+      },
+      {
+        "t_start": 62.062,
+        "t_end": 71.337933
+      },
+      {
+        "t_start": 71.337933,
+        "t_end": 89.956533
+      },
+      {
+        "t_start": 89.956533,
+        "t_end": 90.557133
+      },
+      {
+        "t_start": 90.557133,
+        "t_end": 92.4924
+      },
+      {
+        "t_start": 92.4924,
+        "t_end": 102.6025
+      },
+      {
+        "t_start": 102.6025,
+        "t_end": 104.5044
+      },
+      {
+        "t_start": 104.5044,
+        "t_end": 105.238467
+      },
+      {
+        "t_start": 105.238467,
+        "t_end": 113.279833
+      },
+      {
+        "t_start": 113.279833,
+        "t_end": 114.681233
+      },
+      {
+        "t_start": 114.681233,
+        "t_end": 117.8177
+      },
+      {
+        "t_start": 117.8177,
+        "t_end": 121.387933
+      },
+      {
+        "t_start": 121.387933,
+        "t_end": 125.0249
+      },
+      {
+        "t_start": 125.0249,
+        "t_end": 127.894433
+      },
+      {
+        "t_start": 127.894433,
+        "t_end": 130.263467
+      },
+      {
+        "t_start": 130.263467,
+        "t_end": 132.298833
+      },
+      {
+        "t_start": 132.298833,
+        "t_end": 146.679867
+      },
+      {
+        "t_start": 146.679867,
+        "t_end": 147.380567
+      },
+      {
+        "t_start": 147.380567,
+        "t_end": 149.4493
+      },
+      {
+        "t_start": 149.4493,
+        "t_end": 152.218733
+      },
+      {
+        "t_start": 152.218733,
+        "t_end": 152.7526
+      },
+      {
+        "t_start": 152.7526,
+        "t_end": 153.8537
+      },
+      {
+        "t_start": 153.8537,
+        "t_end": 156.9568
+      },
+      {
+        "t_start": 156.9568,
+        "t_end": 159.425933
+      },
+      {
+        "t_start": 159.425933,
+        "t_end": 161.4613
+      },
+      {
+        "t_start": 161.4613,
+        "t_end": 166.833333
+      },
+      {
+        "t_start": 166.833333,
+        "t_end": 173.506667
+      },
+      {
+        "t_start": 173.506667,
+        "t_end": 184.8847
+      },
+      {
+        "t_start": 184.8847,
+        "t_end": 187.6875
+      },
+      {
+        "t_start": 187.6875,
+        "t_end": 191.357833
+      },
+      {
+        "t_start": 191.357833,
+        "t_end": 193.826967
+      },
+      {
+        "t_start": 193.826967,
+        "t_end": 197.9978
+      },
+      {
+        "t_start": 197.9978,
+        "t_end": 199.766233
+      },
+      {
+        "t_start": 199.766233,
+        "t_end": 205.738867
+      },
+      {
+        "t_start": 205.738867,
+        "t_end": 208.341467
+      },
+      {
+        "t_start": 208.341467,
+        "t_end": 210.0098
+      }
+    ],
+    "duration": 210.0098
+  },
+  "alignment_basho": "202407"
+}

@@ -1,0 +1,821 @@
+{
+  "video_id": "202405_a",
+  "segments": [
+    {
+      "t_start": 30.6306,
+      "t_end": 33.666967,
+      "dominant_caption": "Cup Begins in Tokyo Battle for the CLASH SUMO MAY",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 33.666967,
+      "t_end": 38.78875,
+      "dominant_caption": "Cup Begins in Tokyo Battle for the CLASH SUMO MAY",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 38.78875,
+      "t_end": 45.111733,
+      "dominant_caption": "TOSNORTO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "TOSNORTO",
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 48.79875,
+      "t_end": 60.5605,
+      "dominant_caption": "HOSHORYU",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "HOSHORYU",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202405",
+        "day": 3,
+        "matchNo": 18,
+        "eastId": 19,
+        "westId": 9,
+        "winnerId": 19,
+        "kimarite": "yorikiri",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 60.5605,
+      "t_end": 68.9689,
+      "dominant_caption": "HOSHORYU",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "HOSHORYU",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202405",
+        "day": 4,
+        "matchNo": 19,
+        "eastId": 19,
+        "westId": 24,
+        "winnerId": 19,
+        "kimarite": "yoritaoshi",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 70.07000000000001,
+      "t_end": 75.442033,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202405",
+        "day": 1,
+        "matchNo": 20,
+        "eastId": 45,
+        "westId": 8850,
+        "winnerId": 8850,
+        "kimarite": "sukuinage",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 75.442033,
+      "t_end": 78.7787,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202405",
+        "day": 3,
+        "matchNo": 14,
+        "eastId": 21,
+        "westId": 8850,
+        "winnerId": 8850,
+        "kimarite": "yorikiri",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 78.7787,
+      "t_end": 84.851433,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202405",
+        "day": 4,
+        "matchNo": 15,
+        "eastId": 13,
+        "westId": 8850,
+        "winnerId": 8850,
+        "kimarite": "tsukiotoshi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 84.851433,
+      "t_end": 89.522767,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202405",
+        "day": 5,
+        "matchNo": 18,
+        "eastId": 8850,
+        "westId": 7,
+        "winnerId": 8850,
+        "kimarite": "yoritaoshi",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 89.522767,
+      "t_end": 109.109,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202405",
+        "day": 6,
+        "matchNo": 17,
+        "eastId": 8850,
+        "westId": 20,
+        "winnerId": 8850,
+        "kimarite": "yorikiri",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 109.109,
+      "t_end": 112.11200000000001,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202405",
+        "day": 7,
+        "matchNo": 15,
+        "eastId": 74,
+        "westId": 8850,
+        "winnerId": 8850,
+        "kimarite": "shitatedashinage",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 112.11200000000001,
+      "t_end": 116.783333,
+      "dominant_caption": "KIRISHIMA",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "KIRISHIMA",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202405",
+        "day": 2,
+        "matchNo": 17,
+        "eastId": 24,
+        "westId": 7,
+        "winnerId": 7,
+        "kimarite": "oshidashi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 116.783333,
+      "t_end": 127.660867,
+      "dominant_caption": "KIRISHIMA",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "KIRISHIMA",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202405",
+        "day": 2,
+        "matchNo": 17,
+        "eastId": 24,
+        "westId": 7,
+        "winnerId": 7,
+        "kimarite": "oshidashi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 127.660867,
+      "t_end": 132.465667,
+      "dominant_caption": "KIRISHIMA",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "KIRISHIMA",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202405",
+        "day": 2,
+        "matchNo": 17,
+        "eastId": 24,
+        "westId": 7,
+        "winnerId": 7,
+        "kimarite": "oshidashi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 132.465667,
+      "t_end": 139.38925,
+      "dominant_caption": "KIRISHIMA",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "KIRISHIMA",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202405",
+        "day": 2,
+        "matchNo": 17,
+        "eastId": 24,
+        "westId": 7,
+        "winnerId": 7,
+        "kimarite": "oshidashi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 139.38925,
+      "t_end": 143.710233,
+      "dominant_caption": "KOTOZAKURA",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "KOTOZAKURA",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202405",
+        "day": 2,
+        "matchNo": 19,
+        "eastId": 74,
+        "westId": 20,
+        "winnerId": 20,
+        "kimarite": "katasukashi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 143.710233,
+      "t_end": 151.684867,
+      "dominant_caption": "KOTOZAKURA",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "KOTOZAKURA",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202405",
+        "day": 3,
+        "matchNo": 17,
+        "eastId": 24,
+        "westId": 20,
+        "winnerId": 20,
+        "kimarite": "oshidashi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 151.684867,
+      "t_end": 156.322833,
+      "dominant_caption": "KOTOZAKURA",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "KOTOZAKURA",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202405",
+        "day": 4,
+        "matchNo": 18,
+        "eastId": 56,
+        "westId": 20,
+        "winnerId": 20,
+        "kimarite": "uwatenage",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 161.928433,
+      "t_end": 165.9658,
+      "dominant_caption": "KOTOZAKURA",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "KOTOZAKURA",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202405",
+        "day": 5,
+        "matchNo": 19,
+        "eastId": 21,
+        "westId": 20,
+        "winnerId": 20,
+        "kimarite": "yoritaoshi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 166.91675,
+      "t_end": 181.648133,
+      "dominant_caption": "AONISHIKI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "AONISHIKI",
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 181.648133,
+      "t_end": 186.252733,
+      "dominant_caption": "AONISHIKI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "AONISHIKI",
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 186.252733,
+      "t_end": 190.323467,
+      "dominant_caption": "AONISHIKI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "AONISHIKI",
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 190.323467,
+      "t_end": 200.8006,
+      "dominant_caption": "AONISHIKI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "AONISHIKI",
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 200.8006,
+      "t_end": 207.4072,
+      "dominant_caption": "AONISHIKI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "AONISHIKI",
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    }
+  ],
+  "meta": {
+    "ocr_segments": [
+      {
+        "t_start": 0.0,
+        "t_end": 1.5015,
+        "dominant_caption": "",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 6,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 1.5015,
+        "t_end": 3.2532500000000004,
+        "dominant_caption": "Morita Hiro",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 3.2532500000000004,
+        "t_end": 3.75375,
+        "dominant_caption": "Hiro Morita",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 3.75375,
+        "t_end": 4.5045,
+        "dominant_caption": "Morita Hiro",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 2,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 4.5045,
+        "t_end": 5.25525,
+        "dominant_caption": "Hiro Morita",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 5.25525,
+        "t_end": 5.755750000000001,
+        "dominant_caption": "Morita Hiro",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 5.755750000000001,
+        "t_end": 6.25625,
+        "dominant_caption": "Hiro Morita",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 6.25625,
+        "t_end": 12.76275,
+        "dominant_caption": "Morita Hiro",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 25,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 12.76275,
+        "t_end": 19.26925,
+        "dominant_caption": "Cup Begins in Tokyo Battle for the CLASH SUMO MAY Emperor $",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 19.26925,
+        "t_end": 19.769750000000002,
+        "dominant_caption": "Battle for the CLASH SUMO MAY Emperor's [",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 19.769750000000002,
+        "t_end": 20.5205,
+        "dominant_caption": "CLASH Cup Begins in Tokyo Battle for the SUMO MAY Emperor's",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 2,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 20.5205,
+        "t_end": 21.271250000000002,
+        "dominant_caption": "MAY Cup Battle for the SUMO Emperor's",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 21.271250000000002,
+        "t_end": 21.77175,
+        "dominant_caption": "CLASH Cup Begins in Tokyo Battle for the SUMO MAY Emperor's",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 21.77175,
+        "t_end": 22.27225,
+        "dominant_caption": "MAY Cup Battle for the SUMO Emperor's",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 22.27225,
+        "t_end": 23.27325,
+        "dominant_caption": "Cup Begins in Tokyo Battle for the CLASH SUMO MAY Emperor'$",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 3,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 23.27325,
+        "t_end": 24.274250000000002,
+        "dominant_caption": "MAY CLASHTokyo] Battle for the Cup SUMO Emperor'$",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 24.274250000000002,
+        "t_end": 26.27625,
+        "dominant_caption": "CLASH Cup Begins in Tokyo Battle for the SUMO MAY Emperor's",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 7,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 26.27625,
+        "t_end": 28.27825,
+        "dominant_caption": "MAY_ Cup Battle for the SUMO Emperor's",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 28.27825,
+        "t_end": 28.778750000000002,
+        "dominant_caption": "MAY (Battle forthe Emperor s Cup_ SUMO",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 28.778750000000002,
+        "t_end": 38.78875,
+        "dominant_caption": "Cup Begins in Tokyo Battle for the CLASH SUMO MAY",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 39,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 38.78875,
+        "t_end": 48.79875,
+        "dominant_caption": "TOSNORTO",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": "TOSNORTO"
+      },
+      {
+        "t_start": 48.79875,
+        "t_end": 70.07000000000001,
+        "dominant_caption": "HOSHORYU",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 84,
+        "matchup_names": null,
+        "lone_name": "HOSHORYU"
+      },
+      {
+        "t_start": 70.07000000000001,
+        "t_end": 112.11200000000001,
+        "dominant_caption": "ONOSATO",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 84,
+        "matchup_names": null,
+        "lone_name": "ONOSATO"
+      },
+      {
+        "t_start": 112.11200000000001,
+        "t_end": 139.38925,
+        "dominant_caption": "KIRISHIMA",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 25,
+        "matchup_names": null,
+        "lone_name": "KIRISHIMA"
+      },
+      {
+        "t_start": 139.38925,
+        "t_end": 166.91675,
+        "dominant_caption": "KOTOZAKURA",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 85,
+        "matchup_names": null,
+        "lone_name": "KOTOZAKURA"
+      },
+      {
+        "t_start": 166.91675,
+        "t_end": 210.0428,
+        "dominant_caption": "AONISHIKI",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 44,
+        "matchup_names": null,
+        "lone_name": "AONISHIKI"
+      }
+    ],
+    "visual_segments": [
+      {
+        "t_start": 0.0,
+        "t_end": 1.935267
+      },
+      {
+        "t_start": 1.935267,
+        "t_end": 7.173833
+      },
+      {
+        "t_start": 7.173833,
+        "t_end": 9.009
+      },
+      {
+        "t_start": 9.009,
+        "t_end": 11.578233
+      },
+      {
+        "t_start": 11.578233,
+        "t_end": 15.081733
+      },
+      {
+        "t_start": 15.081733,
+        "t_end": 17.083733
+      },
+      {
+        "t_start": 17.083733,
+        "t_end": 21.588233
+      },
+      {
+        "t_start": 21.588233,
+        "t_end": 23.6236
+      },
+      {
+        "t_start": 23.6236,
+        "t_end": 25.658967
+      },
+      {
+        "t_start": 25.658967,
+        "t_end": 30.6306
+      },
+      {
+        "t_start": 30.6306,
+        "t_end": 33.666967
+      },
+      {
+        "t_start": 33.666967,
+        "t_end": 45.111733
+      },
+      {
+        "t_start": 45.111733,
+        "t_end": 47.047
+      },
+      {
+        "t_start": 47.047,
+        "t_end": 60.5605
+      },
+      {
+        "t_start": 60.5605,
+        "t_end": 68.9689
+      },
+      {
+        "t_start": 68.9689,
+        "t_end": 75.442033
+      },
+      {
+        "t_start": 75.442033,
+        "t_end": 78.7787
+      },
+      {
+        "t_start": 78.7787,
+        "t_end": 84.851433
+      },
+      {
+        "t_start": 84.851433,
+        "t_end": 89.522767
+      },
+      {
+        "t_start": 89.522767,
+        "t_end": 109.109
+      },
+      {
+        "t_start": 109.109,
+        "t_end": 116.783333
+      },
+      {
+        "t_start": 116.783333,
+        "t_end": 127.660867
+      },
+      {
+        "t_start": 127.660867,
+        "t_end": 132.465667
+      },
+      {
+        "t_start": 132.465667,
+        "t_end": 143.710233
+      },
+      {
+        "t_start": 143.710233,
+        "t_end": 151.684867
+      },
+      {
+        "t_start": 151.684867,
+        "t_end": 156.322833
+      },
+      {
+        "t_start": 156.322833,
+        "t_end": 159.025533
+      },
+      {
+        "t_start": 159.025533,
+        "t_end": 161.928433
+      },
+      {
+        "t_start": 161.928433,
+        "t_end": 165.9658
+      },
+      {
+        "t_start": 165.9658,
+        "t_end": 181.648133
+      },
+      {
+        "t_start": 181.648133,
+        "t_end": 186.252733
+      },
+      {
+        "t_start": 186.252733,
+        "t_end": 190.323467
+      },
+      {
+        "t_start": 190.323467,
+        "t_end": 200.8006
+      },
+      {
+        "t_start": 200.8006,
+        "t_end": 207.4072
+      },
+      {
+        "t_start": 207.4072,
+        "t_end": 210.0098
+      }
+    ],
+    "duration": 210.0428
+  },
+  "alignment_basho": "202405"
+}

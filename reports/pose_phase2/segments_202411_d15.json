@@ -1,0 +1,665 @@
+{
+  "video_id": "202411_d15",
+  "segments": [
+    {
+      "t_start": 13.76375,
+      "t_end": 20.787433,
+      "dominant_caption": "SUMO 2024 IVING",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 28.5285,
+      "t_end": 36.302933,
+      "dominant_caption": "SUMO 2024 THE LIVING",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 37.5375,
+      "t_end": 41.574867,
+      "dominant_caption": "VS_ SHODAI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 41.574867,
+      "t_end": 51.818433,
+      "dominant_caption": "VS_ SHODAI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 53.486767,
+      "t_end": 56.790067,
+      "dominant_caption": "Vs_HIRADOUMI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 56.790067,
+      "t_end": 62.095367,
+      "dominant_caption": "Vs_HIRADOUMI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 65.532133,
+      "t_end": 68.9689,
+      "dominant_caption": "Vs_HIRADOUMI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 70.07,
+      "t_end": 76.4764,
+      "dominant_caption": "Vs; OHo",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 76.4764,
+      "t_end": 93.34325000000001,
+      "dominant_caption": "Vs; OHo",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 93.34325000000001,
+      "t_end": 101.7016,
+      "dominant_caption": "VS_ WAKATAKAKAGE",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "WAKATAKAKAGE",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202411",
+        "day": 1,
+        "matchNo": 18,
+        "eastId": 7,
+        "westId": 12,
+        "winnerId": 12,
+        "kimarite": "yorikiri",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 104.137367,
+      "t_end": 108.942167,
+      "dominant_caption": "VS_ WAKATAKAKAGE",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "WAKATAKAKAGE",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202411",
+        "day": 2,
+        "matchNo": 18,
+        "eastId": 12,
+        "westId": 9,
+        "winnerId": 12,
+        "kimarite": "oshidashi",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 108.942167,
+      "t_end": 113.446667,
+      "dominant_caption": "VS_ WAKATAKAKAGE",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "WAKATAKAKAGE",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202411",
+        "day": 3,
+        "matchNo": 15,
+        "eastId": 12,
+        "westId": 71,
+        "winnerId": 12,
+        "kimarite": "oshidashi",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 113.446667,
+      "t_end": 118.36825,
+      "dominant_caption": "VS_ WAKATAKAKAGE",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "WAKATAKAKAGE",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202411",
+        "day": 6,
+        "matchNo": 21,
+        "eastId": 12,
+        "westId": 8850,
+        "winnerId": 12,
+        "kimarite": "oshidashi",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 120.9208,
+      "t_end": 127.093633,
+      "dominant_caption": "VS URA",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 127.093633,
+      "t_end": 134.0339,
+      "dominant_caption": "VS URA",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 134.0339,
+      "t_end": 140.14,
+      "dominant_caption": "VS_ ABI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 142.39225,
+      "t_end": 149.082267,
+      "dominant_caption": "VS_ ABI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 149.6495,
+      "t_end": 156.5564,
+      "dominant_caption": "Vs-ATANIFUJ [",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 156.5564,
+      "t_end": 165.6655,
+      "dominant_caption": "Vs_ATAMIFUJI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 165.6655,
+      "t_end": 168.9688,
+      "dominant_caption": "VS_CHURANOUMI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 175.92575,
+      "t_end": 184.851333,
+      "dominant_caption": "VS_CHURAN - UMI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 184.851333,
+      "t_end": 193.193,
+      "dominant_caption": "VS_CHURAN - UMI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 193.7936,
+      "t_end": 200.166633,
+      "dominant_caption": "Vs: OSHOMA",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 200.166633,
+      "t_end": 208.274733,
+      "dominant_caption": "Vs: OSHOMA",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    }
+  ],
+  "meta": {
+    "ocr_segments": [
+      {
+        "t_start": 0.0,
+        "t_end": 1.5015,
+        "dominant_caption": "",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 6,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 1.5015,
+        "t_end": 4.004,
+        "dominant_caption": "Hiro _ Morita",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 4,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 4.004,
+        "t_end": 13.76375,
+        "dominant_caption": "Morita Hire",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 35,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 13.76375,
+        "t_end": 22.772750000000002,
+        "dominant_caption": "SUMO 2024 IVING",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 22.772750000000002,
+        "t_end": 23.5235,
+        "dominant_caption": "UP To SUMO HYPE 2024 LIVING",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 2,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 23.5235,
+        "t_end": 28.5285,
+        "dominant_caption": "UP TO SUMO HYPE 2024 THE LIVING",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 18,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 28.5285,
+        "t_end": 37.5375,
+        "dominant_caption": "SUMO 2024 THE LIVING",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 18,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 37.5375,
+        "t_end": 52.30225,
+        "dominant_caption": "VS_ SHODAI",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 41,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 52.30225,
+        "t_end": 70.07,
+        "dominant_caption": "Vs_HIRADOUMI",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 30,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 70.07,
+        "t_end": 93.34325000000001,
+        "dominant_caption": "Vs; OHo",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 63,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 93.34325000000001,
+        "t_end": 118.36825,
+        "dominant_caption": "VS_ WAKATAKAKAGE",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 37,
+        "matchup_names": null,
+        "lone_name": "WAKATAKAKAGE"
+      },
+      {
+        "t_start": 118.36825,
+        "t_end": 134.13400000000001,
+        "dominant_caption": "VS URA",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 26,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 134.13400000000001,
+        "t_end": 141.39125,
+        "dominant_caption": "VS_ ABI",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 3,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 141.39125,
+        "t_end": 142.39225,
+        "dominant_caption": "V3- ABI",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 142.39225,
+        "t_end": 149.6495,
+        "dominant_caption": "VS_ ABI",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 28,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 149.6495,
+        "t_end": 156.90675,
+        "dominant_caption": "Vs-ATANIFUJ [",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 156.90675,
+        "t_end": 165.6655,
+        "dominant_caption": "Vs_ATAMIFUJI",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 34,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 165.6655,
+        "t_end": 175.92575,
+        "dominant_caption": "VS_CHURANOUMI",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 7,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 175.92575,
+        "t_end": 193.193,
+        "dominant_caption": "VS_CHURAN - UMI",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 62,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 193.193,
+        "t_end": 210.0098,
+        "dominant_caption": "Vs: OSHOMA",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 3,
+        "matchup_names": null,
+        "lone_name": null
+      }
+    ],
+    "visual_segments": [
+      {
+        "t_start": 0.0,
+        "t_end": 5.5055
+      },
+      {
+        "t_start": 5.5055,
+        "t_end": 8.475133
+      },
+      {
+        "t_start": 8.475133,
+        "t_end": 9.275933
+      },
+      {
+        "t_start": 9.275933,
+        "t_end": 9.976633
+      },
+      {
+        "t_start": 9.976633,
+        "t_end": 11.878533
+      },
+      {
+        "t_start": 11.878533,
+        "t_end": 12.846167
+      },
+      {
+        "t_start": 12.846167,
+        "t_end": 20.787433
+      },
+      {
+        "t_start": 20.787433,
+        "t_end": 25.959267
+      },
+      {
+        "t_start": 25.959267,
+        "t_end": 36.302933
+      },
+      {
+        "t_start": 36.302933,
+        "t_end": 41.574867
+      },
+      {
+        "t_start": 41.574867,
+        "t_end": 51.818433
+      },
+      {
+        "t_start": 51.818433,
+        "t_end": 53.486767
+      },
+      {
+        "t_start": 53.486767,
+        "t_end": 56.790067
+      },
+      {
+        "t_start": 56.790067,
+        "t_end": 62.095367
+      },
+      {
+        "t_start": 62.095367,
+        "t_end": 62.695967
+      },
+      {
+        "t_start": 62.695967,
+        "t_end": 65.532133
+      },
+      {
+        "t_start": 65.532133,
+        "t_end": 68.9689
+      },
+      {
+        "t_start": 68.9689,
+        "t_end": 76.4764
+      },
+      {
+        "t_start": 76.4764,
+        "t_end": 101.7016
+      },
+      {
+        "t_start": 101.7016,
+        "t_end": 104.137367
+      },
+      {
+        "t_start": 104.137367,
+        "t_end": 108.942167
+      },
+      {
+        "t_start": 108.942167,
+        "t_end": 113.446667
+      },
+      {
+        "t_start": 113.446667,
+        "t_end": 119.8197
+      },
+      {
+        "t_start": 119.8197,
+        "t_end": 120.9208
+      },
+      {
+        "t_start": 120.9208,
+        "t_end": 127.093633
+      },
+      {
+        "t_start": 127.093633,
+        "t_end": 134.0339
+      },
+      {
+        "t_start": 134.0339,
+        "t_end": 140.14
+      },
+      {
+        "t_start": 140.14,
+        "t_end": 141.2411
+      },
+      {
+        "t_start": 141.2411,
+        "t_end": 149.082267
+      },
+      {
+        "t_start": 149.082267,
+        "t_end": 156.5564
+      },
+      {
+        "t_start": 156.5564,
+        "t_end": 168.9688
+      },
+      {
+        "t_start": 168.9688,
+        "t_end": 171.5714
+      },
+      {
+        "t_start": 171.5714,
+        "t_end": 174.0739
+      },
+      {
+        "t_start": 174.0739,
+        "t_end": 184.851333
+      },
+      {
+        "t_start": 184.851333,
+        "t_end": 193.7936
+      },
+      {
+        "t_start": 193.7936,
+        "t_end": 200.166633
+      },
+      {
+        "t_start": 200.166633,
+        "t_end": 208.274733
+      },
+      {
+        "t_start": 208.274733,
+        "t_end": 210.0098
+      }
+    ],
+    "duration": 210.0098
+  },
+  "alignment_basho": "202411"
+}

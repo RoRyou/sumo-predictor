@@ -1,0 +1,814 @@
+{
+  "video_id": "202411_d1",
+  "segments": [
+    {
+      "t_start": 6.25625,
+      "t_end": 10.744067,
+      "dominant_caption": "New FINALE SUMO Battles 2024 Fresh Faces,",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 13.947267,
+      "t_end": 16.983633,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202411",
+        "day": 1,
+        "matchNo": 19,
+        "eastId": 24,
+        "westId": 8850,
+        "winnerId": 8850,
+        "kimarite": "tsukiotoshi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 16.983633,
+      "t_end": 26.5265,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202411",
+        "day": 2,
+        "matchNo": 20,
+        "eastId": 41,
+        "westId": 8850,
+        "winnerId": 8850,
+        "kimarite": "oshitaoshi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 26.5265,
+      "t_end": 42.542500000000004,
+      "dominant_caption": "KOMUSUBI 4 # WAKAMOTOHARU SHODAI",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 42.542500000000004,
+      "t_end": 49.6496,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202411",
+        "day": 3,
+        "matchNo": 21,
+        "eastId": 33,
+        "westId": 8850,
+        "winnerId": 8850,
+        "kimarite": "oshidashi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 55.80575,
+      "t_end": 59.1591,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202411",
+        "day": 5,
+        "matchNo": 20,
+        "eastId": 74,
+        "westId": 8850,
+        "winnerId": 8850,
+        "kimarite": "oshidashi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 59.1591,
+      "t_end": 63.530133,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202411",
+        "day": 7,
+        "matchNo": 19,
+        "eastId": 28,
+        "westId": 8850,
+        "winnerId": 8850,
+        "kimarite": "oshidashi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 63.530133,
+      "t_end": 70.003267,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202411",
+        "day": 8,
+        "matchNo": 19,
+        "eastId": 21,
+        "westId": 8850,
+        "winnerId": 8850,
+        "kimarite": "oshidashi",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 70.003267,
+      "t_end": 74.307567,
+      "dominant_caption": "ONOSATO",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ONOSATO",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202411",
+        "day": 9,
+        "matchNo": 20,
+        "eastId": 13,
+        "westId": 8850,
+        "winnerId": 8850,
+        "kimarite": "yorikiri",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 75.5755,
+      "t_end": 79.412667,
+      "dominant_caption": "Qade itall feeltealy",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 80.547133,
+      "t_end": 84.651233,
+      "dominant_caption": "Qade itall feeltealy",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 89.022267,
+      "t_end": 93.960533,
+      "dominant_caption": "Qade itall feeltealy",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 93.960533,
+      "t_end": 98.34825000000001,
+      "dominant_caption": "Qade itall feeltealy",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 98.34825000000001,
+      "t_end": 104.85475,
+      "dominant_caption": "Aslmako Wy debutas@ @zeldb",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 104.85475,
+      "t_end": 114.61449999999999,
+      "dominant_caption": "Fud focused @ belng tullly prepared",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 116.549767,
+      "t_end": 121.37125,
+      "dominant_caption": "15-@ayjouuey begiuss",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 121.37125,
+      "t_end": 124.6245,
+      "dominant_caption": "I@ tho beStwaypossibla",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 133.166367,
+      "t_end": 140.6405,
+      "dominant_caption": "ASAKORYU",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ASAKORYU",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202411",
+        "day": 3,
+        "matchNo": 1,
+        "eastId": 164,
+        "westId": 52,
+        "winnerId": 164,
+        "kimarite": "oshidashi",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 140.6405,
+      "t_end": 144.077267,
+      "dominant_caption": "ASAKORYU",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ASAKORYU",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202411",
+        "day": 4,
+        "matchNo": 3,
+        "eastId": 164,
+        "westId": 83,
+        "winnerId": 164,
+        "kimarite": "hatakikomi",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 146.713233,
+      "t_end": 152.018533,
+      "dominant_caption": "ASAKORYU",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ASAKORYU",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202411",
+        "day": 6,
+        "matchNo": 1,
+        "eastId": 86,
+        "westId": 164,
+        "winnerId": 164,
+        "kimarite": "shitatenage",
+        "y_east": 0
+      }
+    },
+    {
+      "t_start": 152.018533,
+      "t_end": 158.291467,
+      "dominant_caption": "ASAKORYU",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": "ASAKORYU",
+      "score": null,
+      "source": "merged",
+      "alignment": {
+        "bashoId": "202411",
+        "day": 10,
+        "matchNo": 3,
+        "eastId": 164,
+        "westId": 35,
+        "winnerId": 164,
+        "kimarite": "kotenage",
+        "y_east": 1
+      }
+    },
+    {
+      "t_start": 159.90975,
+      "t_end": 167.300467,
+      "dominant_caption": "Hes wow beoeuoa @zeld",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 167.300467,
+      "t_end": 172.305467,
+      "dominant_caption": "Hes wow beoeuoa @zeld",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 173.239733,
+      "t_end": 189.856333,
+      "dominant_caption": "Hes wow beoeuoa @zeld",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 192.192,
+      "t_end": 200.45025,
+      "dominant_caption": "ging",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 201.6014,
+      "t_end": 205.45525,
+      "dominant_caption": "Becaso",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 205.45525,
+      "t_end": 210.0098,
+      "dominant_caption": "because",
+      "winner_name": null,
+      "matchup_names": null,
+      "lone_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    }
+  ],
+  "meta": {
+    "ocr_segments": [
+      {
+        "t_start": 0.0,
+        "t_end": 1.5015,
+        "dominant_caption": "",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 6,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 1.5015,
+        "t_end": 3.5035000000000003,
+        "dominant_caption": "Morita Hiro",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 2,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 3.5035000000000003,
+        "t_end": 4.5045,
+        "dominant_caption": "Hiro Morita",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 2,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 4.5045,
+        "t_end": 6.25625,
+        "dominant_caption": "Morita Hiro",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 5,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 6.25625,
+        "t_end": 13.263250000000001,
+        "dominant_caption": "New FINALE SUMO Battles 2024 Fresh Faces,",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 23,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 13.263250000000001,
+        "t_end": 26.5265,
+        "dominant_caption": "ONOSATO",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 30,
+        "matchup_names": null,
+        "lone_name": "ONOSATO"
+      },
+      {
+        "t_start": 26.5265,
+        "t_end": 42.542500000000004,
+        "dominant_caption": "KOMUSUBI 4 # WAKAMOTOHARU SHODAI",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 34,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 42.542500000000004,
+        "t_end": 51.80175,
+        "dominant_caption": "ONOSATO",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 3,
+        "matchup_names": null,
+        "lone_name": "ONOSATO"
+      },
+      {
+        "t_start": 51.80175,
+        "t_end": 53.5535,
+        "dominant_caption": "ONOSATO kor",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 4,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 53.5535,
+        "t_end": 55.05500000000001,
+        "dominant_caption": "ONOSATO",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 2,
+        "matchup_names": null,
+        "lone_name": "ONOSATO"
+      },
+      {
+        "t_start": 55.05500000000001,
+        "t_end": 55.80575,
+        "dominant_caption": "ONOSATO *o2",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 55.80575,
+        "t_end": 75.5755,
+        "dominant_caption": "ONOSATO",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 78,
+        "matchup_names": null,
+        "lone_name": "ONOSATO"
+      },
+      {
+        "t_start": 75.5755,
+        "t_end": 98.34825000000001,
+        "dominant_caption": "Qade itall feeltealy",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 13,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 98.34825000000001,
+        "t_end": 104.85475,
+        "dominant_caption": "Aslmako Wy debutas@ @zeldb",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 13,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 104.85475,
+        "t_end": 114.61449999999999,
+        "dominant_caption": "Fud focused @ belng tullly prepared",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 26,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 114.61449999999999,
+        "t_end": 121.37125,
+        "dominant_caption": "15-@ayjouuey begiuss",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 121.37125,
+        "t_end": 124.6245,
+        "dominant_caption": "I@ tho beStwaypossibla",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 12,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 124.6245,
+        "t_end": 128.128,
+        "dominant_caption": "ASAKORYU SHSH",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 2,
+        "matchup_names": [
+          "ASAKORYU",
+          "SHSH"
+        ],
+        "lone_name": null
+      },
+      {
+        "t_start": 128.128,
+        "t_end": 129.12900000000002,
+        "dominant_caption": "ASARORYU",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 2,
+        "matchup_names": null,
+        "lone_name": "ASARORYU"
+      },
+      {
+        "t_start": 129.12900000000002,
+        "t_end": 129.87975,
+        "dominant_caption": "ASAKORYU shisHI",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 129.87975,
+        "t_end": 130.38025,
+        "dominant_caption": "ASAKORYU",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 1,
+        "matchup_names": null,
+        "lone_name": "ASAKORYU"
+      },
+      {
+        "t_start": 130.38025,
+        "t_end": 132.6325,
+        "dominant_caption": "ASAKORYU shiSHI",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 8,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 132.6325,
+        "t_end": 159.90975,
+        "dominant_caption": "ASAKORYU",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 101,
+        "matchup_names": null,
+        "lone_name": "ASAKORYU"
+      },
+      {
+        "t_start": 159.90975,
+        "t_end": 192.192,
+        "dominant_caption": "Hes wow beoeuoa @zeld",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 28,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 192.192,
+        "t_end": 200.45025,
+        "dominant_caption": "ging",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 5,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 200.45025,
+        "t_end": 205.45525,
+        "dominant_caption": "Becaso",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 15,
+        "matchup_names": null,
+        "lone_name": null
+      },
+      {
+        "t_start": 205.45525,
+        "t_end": 210.0098,
+        "dominant_caption": "because",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 2,
+        "matchup_names": null,
+        "lone_name": null
+      }
+    ],
+    "visual_segments": [
+      {
+        "t_start": 0.0,
+        "t_end": 10.744067
+      },
+      {
+        "t_start": 10.744067,
+        "t_end": 13.947267
+      },
+      {
+        "t_start": 13.947267,
+        "t_end": 16.983633
+      },
+      {
+        "t_start": 16.983633,
+        "t_end": 49.6496
+      },
+      {
+        "t_start": 49.6496,
+        "t_end": 54.521133
+      },
+      {
+        "t_start": 54.521133,
+        "t_end": 59.1591
+      },
+      {
+        "t_start": 59.1591,
+        "t_end": 63.530133
+      },
+      {
+        "t_start": 63.530133,
+        "t_end": 70.003267
+      },
+      {
+        "t_start": 70.003267,
+        "t_end": 74.307567
+      },
+      {
+        "t_start": 74.307567,
+        "t_end": 74.941533
+      },
+      {
+        "t_start": 74.941533,
+        "t_end": 79.412667
+      },
+      {
+        "t_start": 79.412667,
+        "t_end": 80.547133
+      },
+      {
+        "t_start": 80.547133,
+        "t_end": 84.651233
+      },
+      {
+        "t_start": 84.651233,
+        "t_end": 86.2862
+      },
+      {
+        "t_start": 86.2862,
+        "t_end": 88.2882
+      },
+      {
+        "t_start": 88.2882,
+        "t_end": 89.022267
+      },
+      {
+        "t_start": 89.022267,
+        "t_end": 93.960533
+      },
+      {
+        "t_start": 93.960533,
+        "t_end": 116.549767
+      },
+      {
+        "t_start": 116.549767,
+        "t_end": 127.293833
+      },
+      {
+        "t_start": 127.293833,
+        "t_end": 133.166367
+      },
+      {
+        "t_start": 133.166367,
+        "t_end": 140.6405
+      },
+      {
+        "t_start": 140.6405,
+        "t_end": 144.077267
+      },
+      {
+        "t_start": 144.077267,
+        "t_end": 145.3452
+      },
+      {
+        "t_start": 145.3452,
+        "t_end": 146.713233
+      },
+      {
+        "t_start": 146.713233,
+        "t_end": 152.018533
+      },
+      {
+        "t_start": 152.018533,
+        "t_end": 158.291467
+      },
+      {
+        "t_start": 158.291467,
+        "t_end": 167.300467
+      },
+      {
+        "t_start": 167.300467,
+        "t_end": 172.305467
+      },
+      {
+        "t_start": 172.305467,
+        "t_end": 173.239733
+      },
+      {
+        "t_start": 173.239733,
+        "t_end": 189.856333
+      },
+      {
+        "t_start": 189.856333,
+        "t_end": 192.2921
+      },
+      {
+        "t_start": 192.2921,
+        "t_end": 201.6014
+      },
+      {
+        "t_start": 201.6014,
+        "t_end": 210.0098
+      }
+    ],
+    "duration": 210.0098
+  },
+  "alignment_basho": "202411"
+}

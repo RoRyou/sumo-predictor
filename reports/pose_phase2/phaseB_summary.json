@@ -1,0 +1,66 @@
+{
+  "per_video": {
+    "202401_d1": {
+      "segments": 12,
+      "aligned": 12
+    },
+    "202403_d1": {
+      "segments": 7,
+      "aligned": 7
+    },
+    "202403_d15": {
+      "segments": 3,
+      "aligned": 3
+    },
+    "202405_a": {
+      "segments": 16,
+      "aligned": 16
+    },
+    "202407_d1": {
+      "segments": 10,
+      "aligned": 10
+    },
+    "202407_d15": {
+      "segments": 8,
+      "aligned": 8
+    },
+    "202407_wrap": {
+      "segments": 7,
+      "aligned": 7
+    },
+    "202409_d1": {
+      "segments": 23,
+      "aligned": 23
+    },
+    "202411_d1": {
+      "segments": 11,
+      "aligned": 11
+    },
+    "202411_d15": {
+      "segments": 4,
+      "aligned": 4
+    }
+  },
+  "total_segments": 101,
+  "total_aligned_segment_rows": 101,
+  "unique_aligned_bouts": 83,
+  "by_basho": {
+    "202401": 6,
+    "202403": 7,
+    "202405": 13,
+    "202407": 19,
+    "202409": 23,
+    "202411": 15
+  },
+  "n_with_pose_in_merged": 83,
+  "pose_only_xgb": {
+    "n": 83,
+    "n_pos": 34,
+    "cv_oof_acc": 0.5662650602409639,
+    "cv_oof_logloss": 0.9616615483772301,
+    "majority_class_baseline": 0.5903614457831325
+  },
+  "n_pose_feature_cols": 82,
+  "merged_path": "/Users/liang.lu/project/sumo_pred/data/processed/features_with_pose.parquet",
+  "aligned_path": "/Users/liang.lu/project/sumo_pred/data/processed/pose_features_aligned.parquet"
+}

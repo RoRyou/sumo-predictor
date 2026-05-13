@@ -203,32 +203,58 @@ def detect_segments(
     )
 
     # Attach the dominant caption / winner / score from the overlapping
-    # OCR segment (the one with maximum temporal overlap).
-    def _overlap_winner(t0: float, t1: float) -> tuple[str, str | None, str | None]:
+    # OCR segment.  When a merged segment overlaps MULTIPLE ocr segments
+    # (typical for highlight reels: visual cut spans the "X vs Y" intro
+    # *and* the "X 1-0" outro), we keep both name hints by sweeping all
+    # overlapping ocr segments and taking the first non-empty value for
+    # each field.  This fixes the case where a visual segment spans both
+    # the matchup graphic and the score banner.
+    def _overlap_info(t0: float, t1: float) -> dict:
+        info = {
+            "dominant_caption": "",
+            "winner_name": None,
+            "matchup_names": None,
+            "lone_name": None,
+            "score": None,
+        }
         if not ocr_segments:
-            return "", None, None
-        best_ov = 0.0
-        best_idx = -1
-        for i, s in enumerate(ocr_segments):
+            return info
+        # ocr segments sorted by t_start; iterate those that overlap
+        overlapping: list[tuple[float, Any]] = []
+        for s in ocr_segments:
             ov = max(0.0, min(t1, s.t_end) - max(t0, s.t_start))
-            if ov > best_ov:
-                best_ov = ov
-                best_idx = i
-        if best_idx < 0:
-            return "", None, None
-        s = ocr_segments[best_idx]
-        return s.dominant_caption, s.winner_name, s.score
+            if ov > 0:
+                overlapping.append((ov, s))
+        if not overlapping:
+            return info
+        # pick dominant_caption from the biggest-overlap segment
+        overlapping.sort(key=lambda x: -x[0])
+        info["dominant_caption"] = overlapping[0][1].dominant_caption
+        # Sweep all overlapping ocr segments for first non-empty winner/
+        # matchup/lone/score.  Prefer biggest-overlap first.
+        for _ov, s in overlapping:
+            if info["winner_name"] is None and s.winner_name:
+                info["winner_name"] = s.winner_name
+            if info["matchup_names"] is None and s.matchup_names:
+                info["matchup_names"] = s.matchup_names
+            if info["lone_name"] is None and s.lone_name:
+                info["lone_name"] = s.lone_name
+            if info["score"] is None and s.score:
+                info["score"] = s.score
+        return info
 
     out_segments: list[dict] = []
     for c in merged:
-        cap, win, score = _overlap_winner(c.t_start, c.t_end)
+        info = _overlap_info(c.t_start, c.t_end)
         out_segments.append(
             {
                 "t_start": c.t_start,
                 "t_end": c.t_end,
-                "dominant_caption": cap,
-                "winner_name": win,
-                "score": score,
+                "dominant_caption": info["dominant_caption"],
+                "winner_name": info["winner_name"],
+                "matchup_names": info["matchup_names"],
+                "lone_name": info["lone_name"],
+                "score": info["score"],
                 "source": c.source,
             }
         )
