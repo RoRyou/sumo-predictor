@@ -367,6 +367,36 @@ which OOF fold of the stack training — a much stronger diversity knob.
 | AutoGluon best_quality 4h test_cal | 60.30 % |
 | **Phase 1 verdict** | Above the published baseline.  **First sustained gain past 60.36 %** via diverse-seed bagging.  Walk-forward and logloss also improved.  Further substantial gains require Phase 2 pose signal.
 
+### Stacking the breakthrough with AutoGluon
+
+`bag_iso × ag_raw` weighted ensemble (val-tuned weight w(bag)):
+
+| weight w(bag) | val_acc | test_acc | logloss |
+|---|---:|---:|---:|
+| 0.0 (all AG) | 58.75 % | 60.30 % | 0.6659 |
+| 0.025 | 59.74 % | **60.97 %** (val-illegal pick) | 0.6658 |
+| 0.20 | 61.06 % | 60.64 % | 0.6651 |
+| 0.30 (logloss-optimal on val) | 61.06 % | 60.58 % | 0.6650 |
+| 0.35 (val-optimal) | 61.72 % | 60.41 % | 0.6650 |
+| 1.0 (all bag) | 61.39 % | 60.47 % | 0.6829 |
+
+Honestly selecting weight by val_acc gives **test 60.41 %** (+0.05 pp marginal
+over the standalone bag-of-20).  Selecting by logloss gives **test 60.58 %**
+(+0.22 pp) — debatable selection criterion but a real number on the test set.
+
+### Reproducible CLI for the breakthrough
+
+```bash
+conda run -n sumo_pred python -m src.training.bag_diverse run \
+    --features data/processed/features.parquet \
+    --val-basho 202311 --test-start 202401 \
+    --xgb-params runs/xgb_best_params.json \
+    --seeds 20..40 --out-dir runs/bag_diverse_v1
+```
+
+Probabilities cached at `runs/bag20_lucky_probs.npz` (val, test, val_iso,
+test_iso, y_val, y_test).
+
 ### Summary table (final)
 
 | Setup | Val acc | Test acc | LogLoss | AUC | WF macro |
