@@ -303,12 +303,22 @@ def make_catboost(params: dict[str, Any] | None = None):
     return CatBoostClassifier(**base)
 
 
+def _lazy_make_tabpfn(params=None):  # imported lazily — tabpfn is heavy
+    from src.training.tabpfn_wrapper import make_tabpfn
+
+    return make_tabpfn(params)
+
+
 BASE_MODEL_BUILDERS = {
     "xgb": make_xgb,
     "lgbm": make_lgbm,
     "cat": make_catboost,
     "xgb_focal": make_xgb_focal,
+    "tabpfn": _lazy_make_tabpfn,
 }
+
+# Base models that silently ignore sample_weight (so we don't pass it).
+_NO_SAMPLE_WEIGHT_MODELS = {"tabpfn"}
 
 
 # ---------------------------------------------------------------------- #
@@ -351,7 +361,7 @@ def train_stack(
         for fold, (tr_idx, va_idx) in enumerate(kf.split(X_tr)):
             model = builder(model_params.get(name))
             fit_kwargs: dict[str, Any] = {}
-            if name in ("xgb", "lgbm", "cat", "xgb_focal"):
+            if name not in _NO_SAMPLE_WEIGHT_MODELS:
                 fit_kwargs["sample_weight"] = w_tr[tr_idx]
             model.fit(X_tr.iloc[tr_idx], y_tr[tr_idx], **fit_kwargs)
             oof[va_idx] = model.predict_proba(X_tr.iloc[va_idx])[:, 1]

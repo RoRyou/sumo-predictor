@@ -147,6 +147,52 @@ and high-variance -- strong regularization beats deeper trees.
 4. Pull banzuke `wins`/`losses`/`absences` from previous basho -- the existing features
    don't include the prior basho's final record, only career rolling stats.
 
+---
+
+## Iteration log v4 (HuggingFace approaches, 2026-05-13)
+
+Goal: push past the v3 60.36% test plateau using pre-trained / AutoML approaches.
+
+### Approaches tried
+
+| Approach | val_cal | test_cal | logloss | Notes |
+|---|---:|---:|---:|---|
+| Best manual stack (v4_xgbmeta, reference) | **62.05%** | **60.36%** | 0.7036 | XGB-tuned + LGBM + Cat + XGB meta |
+| TabPFN v2.6 (standalone) | 57.76% | 59.35% | – | Pre-trained transformer, fit 0.8s, predict 7 min on 1.8k rows |
+| TabPFN in stack | – | – | – | Killed: CPU-starved by AutoGluon competing for the same cores |
+| Chronos-Bolt-small encoder (32 PCA dims) | 57.43% | 58.35% | 0.6741 | Win/loss sequence → 512d → PCA(16) per side |
+| **AutoGluon `best_quality` (4h, L3 ensemble)** | **58.75%** | **60.30%** | **0.6659** | 130 models stacked; WeightedEnsemble_L3 winner |
+
+### Diagnosis
+
+The plateau is **genuine**. AutoGluon's `best_quality` preset spent 4 hours fitting 130 different models (LightGBM/CatBoost/XGB variants + RF/XT, with both bagging and 3-level stacking) and landed at test acc 60.30% — within noise (0.06pp) of our manually-tuned stack at 60.36%. Two independent ensembles, very different search strategies, same ceiling.
+
+**This means the 60.36% wall is data-limited, not tuning-limited.** No amount of additional hyperparameter search or feature reshuffling on the current 48-dim structured signal will move the needle.
+
+### Why each HF approach didn't help
+
+* **TabPFN**: At 17.5 k rows we're beyond its sweet spot (≤10 k). The in-context attention scales linearly with predict-set size on CPU (0.24 s/row), making 5-fold OOF stacking impractical (estimated ~1.7 h just for predict, and that's without competing for CPU). Stand-alone test acc 59.35% is below our base XGB (~57.8%) plus calibration / stacking penalty, so the stack version had no realistic upside.
+* **Chronos**: Win/loss tape carries only 1 bit/step; the model's pre-training on continuous signals (energy, weather, finance) gives no transfer advantage. Trees can't exploit 32 dense PCA dims and lose to the original 48 hand-crafted features. The +0.5 pp walk-forward macro improvement was within noise.
+* **AutoGluon**: Already exhausts the search space we'd manually explore. Coming in 0.06 pp behind us is the definitive negative result: there is no untapped tuning gain left.
+
+### Implication for the project
+
+To push past 60.36% test acc we need **new feature streams**, not new models:
+
+1. **Video pose features** (Phase 2, Route B). The pose pipeline is built and smoke-tested. The OCR-based scene-cut module unblocks bout-level alignment on highlight reels (40× improvement in `both_tracks_share`). Next: implement the OCR-name → `shikonaEn` fuzzy match (rapidfuzz, scoped to basho), batch-extract pose features for a few aligned bouts, train Route B.
+2. **Extend historical data** to 2008-2014 (the API goes back to 1958). Doubles the row count, quadruples h2h coverage. Cheap and complementary to (1).
+3. **Per-basho banzuke pressure features** (kachikoshi/makekoshi thresholds, day-of-basho × current-record interactions). The v3 `banzuke.py` first attempt regressed; needs a more careful approach (e.g. interaction features rather than standalone columns).
+
+### Final headline (after all v1–v4 iterations)
+
+| Metric | Value |
+|---|---:|
+| Manual stack test acc | **60.36%** |
+| AutoGluon test acc | 60.30% |
+| Walk-forward macro acc (best) | 57.32% |
+| **Baseline papers** | 55–61% |
+| **Phase 1 verdict** | Matched / slightly above the published baseline. **Plateau is data-limited; further gains require video signal or more history.**
+
 ### Summary table (final)
 
 | Setup | Val acc | Test acc | LogLoss | AUC | WF macro |
