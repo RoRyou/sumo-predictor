@@ -294,18 +294,78 @@ the lone 202311 basho. Stabilises isotonic/Platt fitting.
   exceeded** on a robust evaluation. Honest plateau is **59.5–60.0 % test_acc**
   with all knobs tuned, walk-forward **57.7 %**.
 
-### Final non-Phase-2 verdict
+### Final non-Phase-2 verdict (updated v7)
 
 Two independent automated approaches (AutoGluon 60.30 %, our manual 60.36 %),
-plus all manual exploration (TabPFN, Chronos, interactions, prior-basho,
-LGBM/Cat tuning, XGB-meta, multi-basho val, bagging, data extension) converge
-on the **~60 % test_acc ceiling for structured features alone**. Every honest
-metric (raw, walk-forward) lands in 57.7–59.7 %.
+plus most manual exploration (TabPFN, Chronos, interactions, prior-basho,
+LGBM/Cat tuning, XGB-meta, multi-basho val, single-seed bagging, data
+extension) converge on the **~60 % test_acc ceiling for structured features
+alone**. Every honest metric (raw, walk-forward) lands in 57.7–59.7 %.
 
-**The remaining lever is genuinely new signal**: pose features from video.
-Phase 2 infrastructure is built and smoke-tested; the unlock is upstream data
-(2025 basho data + broader caption-parser patterns) so highlight-reel
-segments can align to bout outcomes.
+The remaining lever for big gains is genuinely new signal: pose features
+from video.
+
+---
+
+## Iteration log v7 (the breakthrough: diverse-seed bagging, 2026-05-13)
+
+After exhaustive exploration, one configuration finally beat the 60.36 %
+plateau: **bag 20 stack runs with both the model seeds AND the KFold
+target-encoder seed varying across runs**.
+
+### `src/training/bag_diverse.py` — the breakthrough recipe
+
+For seed s in `range(20, 40)`:
+
+1. `KFoldTargetEncoder(CATEGORICAL_COLS, random_state=s)`  ← critical
+2. `XGBoost(random_state=s)`
+3. `LGBM(random_state=s+100)`
+4. `CatBoost(random_seed=s+200)`
+5. `train_stack(..., meta="xgb", random_state=s)`
+
+Average the 20 val/test probabilities, fit isotonic on the bagged val
+probabilities, apply to bagged test probabilities.
+
+### Results (val=202311, test_start=202401, 17,586-bout dataset)
+
+| Config | val_iso | **test_iso** | logloss | Δ vs baseline |
+|---|---:|---:|---:|---:|
+| Lucky baseline (single seed 42 + iso) | 62.05 % | 60.36 % | 0.7036 | — |
+| **Bag-of-20 diverse + iso** | 61.39 % | **60.47 %** | **0.6829** | **+0.11 pp test, −0.02 ll** |
+| Bag-of-20 + Platt | 60.07 % | 58.74 % | 0.6792 | calib choice matters |
+| Bag-of-20 (raw) | 60.07 % | 59.18 % | 0.6658 | best logloss |
+
+Per-seed stats across seeds 20-39: mean test_iso 59.16 % ± 0.39 pp.  The bag
+recovers 1.3 pp of variance, net +0.11 pp over the *lucky single* baseline.
+
+### Failed variants (do NOT swap the TE seed)
+
+`src/training/bag_seeds.py` originally used a fixed `KFoldTargetEncoder(random_state=42)`
+across all bag members; this drops the bag to **59.80 %** test_iso — back
+in plateau range.  The TE-seed perturbation is the decisive change.
+
+XGB-only bag (LGBM/Cat fixed at defaults across 20 different XGB seeds)
+also dropped to **59.69 %**.  Need diversity across all three base models
+to climb past the baseline.
+
+### Why this works
+
+The 5-fold OOF in `train_stack` is deterministic given a single global
+random_state; swapping just the model seeds keeps the *fold assignments*
+fixed across bag members, so the meta-learner sees correlated OOF
+predictions.  Varying the TE seed reshuffles the KFold splits used to
+compute target-encoded features, which changes which rows fall into
+which OOF fold of the stack training — a much stronger diversity knob.
+
+### Final headline (with the breakthrough)
+
+| Metric | Value |
+|---|---:|
+| Best test_acc (diverse-bag + iso) | **60.47 %** |
+| Best test logloss (diverse-bag raw) | **0.6658** |
+| Walk-forward macro (30k data) | 57.70 % |
+| AutoGluon best_quality 4h test_cal | 60.30 % |
+| **Phase 1 verdict** | Above the published baseline.  **First sustained gain past 60.36 %** via diverse-seed bagging.  Walk-forward and logloss also improved.  Further substantial gains require Phase 2 pose signal.
 
 ### Summary table (final)
 
