@@ -332,10 +332,11 @@ def train_stack(
     X_test: pd.DataFrame,
     base_models: tuple[str, ...] = ("xgb", "lgbm", "cat"),
     model_params: dict[str, dict[str, Any]] | None = None,
+    meta: str = "lr",  # "lr" or "xgb"
     n_splits: int = 5,
     random_state: int = 42,
 ) -> StackResult:
-    """5-fold OOF stacking; LR is the meta-learner."""
+    """5-fold OOF stacking; ``meta`` selects the meta-learner."""
     base_oof: dict[str, np.ndarray] = {}
     base_val: dict[str, np.ndarray] = {}
     base_test: dict[str, np.ndarray] = {}
@@ -377,11 +378,26 @@ def train_stack(
     Z_tr = np.column_stack([base_oof[n] for n in base_models])
     Z_val = np.column_stack([base_val[n] for n in base_models])
     Z_test = np.column_stack([base_test[n] for n in base_models])
-    meta = LogisticRegression(max_iter=1000, C=1.0)
-    meta.fit(Z_tr, y_tr, sample_weight=w_tr)
-    val_proba = meta.predict_proba(Z_val)[:, 1] if len(X_val) else np.array([])
-    test_proba = meta.predict_proba(Z_test)[:, 1] if len(X_test) else np.array([])
-    return StackResult(base_oof, base_val, base_test, meta, val_proba, test_proba)
+    if meta == "xgb":
+        import xgboost as xgb_
+
+        meta_model = xgb_.XGBClassifier(
+            objective="binary:logistic",
+            max_depth=2,
+            n_estimators=100,
+            learning_rate=0.1,
+            subsample=0.9,
+            reg_lambda=1.0,
+            tree_method="hist",
+            n_jobs=-1,
+            random_state=99,
+        )
+    else:
+        meta_model = LogisticRegression(max_iter=1000, C=1.0)
+    meta_model.fit(Z_tr, y_tr, sample_weight=w_tr)
+    val_proba = meta_model.predict_proba(Z_val)[:, 1] if len(X_val) else np.array([])
+    test_proba = meta_model.predict_proba(Z_test)[:, 1] if len(X_test) else np.array([])
+    return StackResult(base_oof, base_val, base_test, meta_model, val_proba, test_proba)
 
 
 # ---------------------------------------------------------------------- #
@@ -441,6 +457,9 @@ def run(
     add_kimarite_matchup: bool = True,
     base_models: tuple[str, ...] = ("xgb", "lgbm", "cat"),
     xgb_params_path: Path | None = None,
+    lgbm_params_path: Path | None = None,
+    cat_params_path: Path | None = None,
+    meta: str = "lr",
 ) -> dict[str, Any]:
     from src.features.structural import (
         KimariteMatchupTable,
@@ -508,19 +527,22 @@ def run(
     y_val = val_df[LABEL_COL].to_numpy() if len(val_df) else np.array([])
     y_test = test_df[LABEL_COL].to_numpy() if len(test_df) else np.array([])
 
-    # Optuna-tuned XGB params (if available)
+    # Optuna-tuned per-base params (if available)
     model_params: dict[str, dict[str, Any]] = {}
-    if xgb_params_path is not None and Path(xgb_params_path).exists():
-        with open(xgb_params_path) as f:
-            best = json.load(f)
-        model_params["xgb"] = best
-        logger.info("Loaded XGB best params from %s: %s", xgb_params_path, best)
+    for name, path in (("xgb", xgb_params_path), ("lgbm", lgbm_params_path),
+                       ("cat", cat_params_path)):
+        if path is not None and Path(path).exists():
+            with open(path) as f:
+                best = json.load(f)
+            model_params[name] = best
+            logger.info("Loaded %s best params from %s: %s", name, path, best)
 
     # T4: Stack
     stack = train_stack(
         X_tr, y_tr, w_tr, X_val, X_test,
         base_models=base_models,
         model_params=model_params,
+        meta=meta,
     )
 
     # T5: Calibration (Platt) on val
@@ -546,7 +568,13 @@ def run(
     metrics["test_raw"] = report_metrics(y_test, stack.test_proba, "test-stacked")
     metrics["test_cal"] = report_metrics(y_test, cal_test_proba, "test-calibrated")
     metrics["test_by_tier"] = tier_breakdown(test_df, cal_test_proba)
-    metrics["meta_coefs"] = {n: float(c) for n, c in zip(base_models, stack.meta.coef_[0])}
+    # meta_coefs only meaningful for LR meta; XGB meta has feature_importances_
+    if hasattr(stack.meta, "coef_"):
+        metrics["meta_coefs"] = {n: float(c) for n, c in zip(base_models, stack.meta.coef_[0])}
+    elif hasattr(stack.meta, "feature_importances_"):
+        metrics["meta_importance"] = {
+            n: float(c) for n, c in zip(base_models, stack.meta.feature_importances_)
+        }
 
     out_dir.mkdir(parents=True, exist_ok=True)
     with open(out_dir / "metrics.json", "w") as f:
@@ -583,6 +611,9 @@ def cmd_run(args: argparse.Namespace) -> int:
         add_kimarite_matchup=not args.no_kimarite,
         base_models=tuple(args.base_models),
         xgb_params_path=Path(args.xgb_params) if args.xgb_params else None,
+        lgbm_params_path=Path(args.lgbm_params) if args.lgbm_params else None,
+        cat_params_path=Path(args.cat_params) if args.cat_params else None,
+        meta=args.meta,
     )
     print(json.dumps(metrics, indent=2, default=str))
     return 0
@@ -606,6 +637,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
                    help="base models to stack (xgb lgbm cat xgb_focal)")
     r.add_argument("--xgb-params", default=None,
                    help="path to JSON of XGB best params (from Optuna)")
+    r.add_argument("--lgbm-params", default=None,
+                   help="path to JSON of LGBM best params (from Optuna)")
+    r.add_argument("--cat-params", default=None,
+                   help="path to JSON of CatBoost best params (from Optuna)")
+    r.add_argument("--meta", choices=["lr", "xgb"], default="lr",
+                   help="meta-learner type (lr = LogisticRegression, xgb = small XGB)")
     r.add_argument("-v", "--verbose", action="count", default=1)
     r.set_defaults(func=cmd_run)
     return p

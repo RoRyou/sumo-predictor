@@ -41,9 +41,46 @@ from src.training.train_struct import (
     WEIGHT_COL,
     KFoldTargetEncoder,
     feature_cols,
+    make_catboost,
+    make_lgbm,
     make_xgb,
     time_split,
 )
+
+MODEL_BUILDERS = {
+    "xgb": make_xgb,
+    "lgbm": make_lgbm,
+    "cat": make_catboost,
+}
+
+SEARCH_SPACES = {
+    "xgb": {
+        "max_depth": ("int", 3, 8),
+        "n_estimators": ("int", 300, 1200),
+        "learning_rate": ("log", 0.01, 0.1),
+        "subsample": ("float", 0.6, 1.0),
+        "colsample_bytree": ("float", 0.6, 1.0),
+        "reg_lambda": ("log", 0.1, 10.0),
+    },
+    "lgbm": {
+        "num_leaves": ("int", 15, 127),
+        "max_depth": ("int", 3, 10),
+        "n_estimators": ("int", 300, 1200),
+        "learning_rate": ("log", 0.01, 0.1),
+        "subsample": ("float", 0.6, 1.0),
+        "colsample_bytree": ("float", 0.6, 1.0),
+        "reg_lambda": ("log", 0.01, 10.0),
+        "min_child_samples": ("int", 5, 80),
+    },
+    "cat": {
+        "depth": ("int", 4, 8),
+        "iterations": ("int", 300, 1200),
+        "learning_rate": ("log", 0.01, 0.1),
+        "l2_leaf_reg": ("log", 1.0, 10.0),
+        "bagging_temperature": ("float", 0.0, 1.0),
+        "random_strength": ("float", 0.0, 1.0),
+    },
+}
 
 logger = logging.getLogger(__name__)
 
@@ -62,39 +99,45 @@ def _prepare_train_matrix(features_path: Path, val_basho: str, test_start: str):
     return X, y_tr, w, cols
 
 
-def objective_factory(X, y, w, n_splits: int = 5, seed: int = 42):
+def _suggest_param(trial, name: str, spec: tuple) -> float | int:
+    kind, lo, hi = spec
+    if kind == "int":
+        return trial.suggest_int(name, int(lo), int(hi))
+    if kind == "log":
+        return trial.suggest_float(name, float(lo), float(hi), log=True)
+    return trial.suggest_float(name, float(lo), float(hi))
+
+
+def objective_factory(X, y, w, model: str = "xgb", n_splits: int = 5, seed: int = 42):
     import optuna
 
+    builder = MODEL_BUILDERS[model]
+    space = SEARCH_SPACES[model]
+
     def objective(trial: "optuna.trial.Trial") -> float:
-        params = {
-            "max_depth": trial.suggest_int("max_depth", 3, 8),
-            "n_estimators": trial.suggest_int("n_estimators", 300, 1200),
-            "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.1, log=True),
-            "subsample": trial.suggest_float("subsample", 0.6, 1.0),
-            "colsample_bytree": trial.suggest_float("colsample_bytree", 0.6, 1.0),
-            "reg_lambda": trial.suggest_float("reg_lambda", 0.1, 10.0, log=True),
-        }
+        params = {name: _suggest_param(trial, name, spec) for name, spec in space.items()}
         kf = KFold(n_splits=n_splits, shuffle=True, random_state=seed)
         oof = np.zeros(len(X), dtype=float)
         for tr_idx, va_idx in kf.split(X):
-            model = make_xgb(params)
-            model.fit(X.iloc[tr_idx], y[tr_idx], sample_weight=w[tr_idx])
-            oof[va_idx] = model.predict_proba(X.iloc[va_idx])[:, 1]
+            m = builder(params)
+            # all three builders accept sample_weight via .fit()
+            m.fit(X.iloc[tr_idx], y[tr_idx], sample_weight=w[tr_idx])
+            oof[va_idx] = m.predict_proba(X.iloc[va_idx])[:, 1]
         return float(log_loss(y, np.clip(oof, 1e-6, 1 - 1e-6)))
 
     return objective
 
 
 def run(features_path: Path, val_basho: str, test_start: str, out: Path,
-        max_trials: int, timeout: int) -> dict:
+        max_trials: int, timeout: int, model: str = "xgb") -> dict:
     import optuna
 
     X, y, w, cols = _prepare_train_matrix(features_path, val_basho, test_start)
-    logger.info("Tuning XGB on %d train rows × %d features", len(X), len(cols))
+    logger.info("Tuning %s on %d train rows × %d features", model, len(X), len(cols))
     sampler = optuna.samplers.TPESampler(seed=42)
     study = optuna.create_study(direction="minimize", sampler=sampler)
     study.optimize(
-        objective_factory(X, y, w),
+        objective_factory(X, y, w, model=model),
         n_trials=max_trials,
         timeout=timeout,
         show_progress_bar=False,
@@ -128,19 +171,22 @@ def cmd_run(args: argparse.Namespace) -> int:
         out=Path(args.out),
         max_trials=args.max_trials,
         timeout=args.timeout,
+        model=args.model,
     )
     print(json.dumps(best, indent=2))
     return 0
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="Optuna tune XGBoost for Route A")
+    p = argparse.ArgumentParser(description="Optuna tune base model for Route A")
     sub = p.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("run", help="run Optuna study")
     r.add_argument("--features", default="data/processed/features.parquet")
     r.add_argument("--val-basho", required=True)
     r.add_argument("--test-start", required=True)
     r.add_argument("--out", default="runs/xgb_best_params.json")
+    r.add_argument("--model", choices=list(MODEL_BUILDERS), default="xgb",
+                   help="which base model to tune")
     r.add_argument("--max-trials", type=int, default=60)
     r.add_argument("--timeout", type=int, default=1800,
                    help="wall-clock seconds (default 1800 = 30 min)")

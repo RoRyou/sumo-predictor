@@ -152,7 +152,79 @@ and high-variance -- strong regularization beats deeper trees.
 | Setup | Val acc | Test acc | LogLoss | AUC | WF macro |
 |---|---:|---:|---:|---:|---:|
 | Baseline (phase 1) | 60.73% | 59.41% | 0.6731 | 0.6123 | 56.7% |
-| **T15 + Optuna XGB** | **60.73%** | **60.36%** | 0.7075 | 0.6271 | **57.3%** |
+| T15 + Optuna XGB (LR meta) | 60.73% | 60.36% | 0.7075 | 0.6271 | 57.3% |
+| **+ XGB meta-learner** | **62.05%** | **60.36%** | 0.7036 | 0.6259 | 57.3% |
 
 Stop reason: tried all 5 priority tricks + Optuna; plateaued at +0.95pp test / +0.6pp WF.
 Below both stop-criteria thresholds (test >= 61% AND WF macro >= 58%).
+
+---
+
+## Iteration log v3 (Phase 1 polish, 2026-05-13 follow-up)
+
+Three more avenues attempted after the first follow-up.  Same eval split.
+
+### Prior-basho banzuke features (kachikoshi/makekoshi)
+
+`src/features/banzuke.py` — adds 17 columns (`prev_wins_A/B`, `prev_winrate_A/B`,
+`prev_kachikoshi_A/B`, `prev_makekoshi_A/B`, `prev_basho_gap_A/B`, diffs).
+
+Result: **regressed test acc by 0.67pp** (59.69% vs 60.36%). The "close"-tier bucket
+took the hit (58.0% vs 63.4%). Hypothesis: signal is already captured by the
+recent_30/recent_90 winrate windows, and the new sparse columns add variance.
+
+### LGBM + CatBoost Optuna tuning
+
+50 trials each, 10-minute budget. Best OOF logloss:
+
+| Model | Best logloss | Best params |
+|---|---:|---|
+| LGBM | 0.66903 | num_leaves=64, depth=3, n_est=508, lr=0.0135, subsample=0.79, colsample=0.70, reg_lambda=0.13, min_child=63 |
+| CatBoost | 0.66814 | depth=7, iter=411, lr=0.0118, l2=1.19, bag_temp=0.63, rand_str=0.82 |
+| XGB (earlier) | 0.66830 | depth=3, n_est=566, lr=0.010, subsample=0.65, colsample=0.92, reg=0.71 |
+
+Stacking with all three tuned (LR meta): test 59.58% — **down 0.78pp**.
+With XGB meta: test 59.69%. Tuned LGBM/Cat are too conservative; stack loses diversity.
+
+### XGB meta-learner (instead of LogisticRegression)
+
+`max_depth=2, n_estimators=100, learning_rate=0.1`. Catches non-linear interactions
+of base probs (e.g. xgb high + lgbm low → cat decides).
+
+Result with **XGB tuned only + default LGBM/Cat + XGB meta** (the winning config):
+
+- val_cal = **62.05%** (vs 60.73% with LR meta, +1.32pp)
+- test_cal = **60.36%** (unchanged — generalisation cap is real)
+- Meta importance: xgb=0.72, lgbm=0.14, cat=0.14 — XGB dominant but the others still
+  matter, unlike LR meta where LGBM coef was 0.16.
+- test_by_tier: very-close 58.82%, close 62.21%, mid-gap 65.28%
+
+### Ablation summary
+
+| Iter | Setup | val | test |
+|---|---|---:|---:|
+| baseline | T1+T3+T4+T5 + LR meta | 60.73 | 59.41 |
+| final | T15 + Optuna XGB + LR meta | 60.73 | 60.36 |
+| v3_prev | + prior-basho features | 61.06 | 59.69 |
+| **v4_xgbmeta** | **Optuna XGB + XGB meta** | **62.05** | **60.36** |
+| v5_all_tuned | + LGBM/Cat tuned + XGB meta | 60.40 | 59.69 |
+| v6 | 3-way tuned + LR meta | 60.07 | 59.58 |
+| v7_xgb_cat | drop LGBM, XGB meta | 59.74 | 59.02 |
+
+### Final verdict
+
+**Test acc plateau is genuine at ~60.4%** for this feature set and ~17 k bouts.
+Val is harder to keep up: noise from a 303-bout single basho.  Pushing past 61% on
+test would need either:
+
+1. **More data**: extend pull to 2008-2014 (sumo-api goes back to 1958).  Doubles the
+   bout count; quadruples h2h coverage.
+2. **A genuinely new feature stream**: kachikoshi-pressure × day, height/weight
+   interactions for specific kimarite types, current-basho cumulative kimarite mix,
+   or — Phase 2 / video-pose features (which are the whole point of the project).
+3. **Different evaluation**: walk-forward macro is still only 57.3%; the static split
+   may be flattering due to favourable 2024 distribution.
+
+The 65% fusion target depends on video signal that we don't yet have aligned at the
+bout level — Phase 2's `ByteTrack ID lock on highlight reels` problem is the next real
+blocker.
