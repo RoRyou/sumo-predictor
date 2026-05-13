@@ -2,15 +2,41 @@
 
 > **Repo**: `sumo-predictor` · **Python**: 3.11 · **Env**: conda `sumo_pred` · **Targets**: A路线 ≥61% · 融合 ≥65%
 
----
+<p align="center"><b>语言 / Language / 言語</b></p>
+<p align="center">
+  <a href="#desc-zh">🇨🇳 中文</a> &nbsp;·&nbsp;
+  <a href="#desc-en">🇬🇧 English</a> &nbsp;·&nbsp;
+  <a href="#desc-ja">🇯🇵 日本語</a>
+</p>
 
-### English (Project description)
+> 点击下方任意语言标题可展开/收起对应介绍。Click any language header to expand/collapse. クリックで展開/折りたたみ。
+
+<details open id="desc-zh">
+<summary><b>🇨🇳 中文（项目简介）</b></summary>
+
+<br/>
+
+相扑胜负预测系统：把 **结构化数据建模**（历史战绩、番付排名差、身高体重 BMI、直接对战 h2h、kimarite 偏好）与 **视频姿态分析**（YOLOv8-pose + ByteTrack 双人追踪、重心速度/前倾角/膝关节角等力学特征）这两条路线融合起来。公开 baseline 仅靠结构化特征顶到 ~61% 准确率；本项目通过融入视频侧力学信号，目标推到 **65%+**。第一阶段交付结构化路线（XGBoost + LightGBM/CatBoost 集成 + 目标编码 + h2h 贝叶斯收缩 + 时间衰减权重 + Platt 校准）；第二阶段在姿态特征上加 LSTM / Temporal Transformer 时序模型；第三阶段用双塔 MLP 融合两侧。
+
+</details>
+
+<details id="desc-en">
+<summary><b>🇬🇧 English (Project description)</b></summary>
+
+<br/>
 
 A sumo bout outcome prediction system combining **structured-data modeling** (career stats, banzuke rank, BMI, head-to-head) with **video pose analysis** (YOLOv8-pose + ByteTrack tracking, kinematic features like center-of-mass velocity, forward-lean angle, knee angles). Existing public baselines top out at ~61% accuracy using only structured features; we aim for **65%+** by fusing kinematic signals from video. The structured route (XGBoost + ensemble of LightGBM/CatBoost with target-encoding, Bayesian h2h shrinkage, time-decay weighting, and Platt-calibrated probabilities) is delivered first; the pose route adds an LSTM/Temporal-Transformer over per-frame skeletal features; finally a two-tower fusion MLP combines both.
 
-### 日本語 (プロジェクト概要)
+</details>
+
+<details id="desc-ja">
+<summary><b>🇯🇵 日本語 (プロジェクト概要)</b></summary>
+
+<br/>
 
 大相撲の取組勝敗を予測するシステム。**構造化データ路線**(過去戦績・身長体重・番付差・直接対戦履歴) と **映像姿勢解析路線**(YOLOv8-pose + ByteTrack による17関節点追跡、重心速度・前傾角・膝関節角といった力学特徴量) の二経路を組み合わせる。既存研究は構造化データのみで約61%が上限だが、本プロジェクトは映像由来の力学シグナルを融合することで **65%以上** を目標とする。第一段階で構造化路線(XGBoost + LightGBM/CatBoost のアンサンブル、ターゲットエンコーディング、ベイズ縮小による h2h 戦績の正則化、時間減衰重み、Platt スケーリング校正)を構築し、第二段階で時系列モデル(LSTM / Temporal Transformer)を姿勢特徴に適用、最終段階で双塔型 MLP により両者を融合する。
+
+</details>
 
 ---
 
@@ -286,7 +312,7 @@ graph TB
     FA --> FUSION
     FB --> FUSION
     FUSION[Concat + MLP + Dropout] --> CAL[Platt/Isotonic 校准]
-    CAL --> OUT[P(力士A 胜)]
+    CAL --> OUT["P(力士A 胜)"]
 ```
 
 ### 6.2 路线A 塔 — Tabular Stack
@@ -438,9 +464,8 @@ sequenceDiagram
 - [ ] 消融实验 (哪些特征/tricks 贡献最大,记 mlflow)
 - [ ] 概率校准 (T5)
 
-### Phase 5: 部署 (可选)
+### Phase 5: 回测分析 (可选)
 
-- [ ] 每日预测 dashboard (streamlit)
 - [ ] 在合法博彩地区做赔率对比回测
 
 ---
@@ -505,17 +530,3 @@ sumo-predictor/
 3. **技巧多样性**：相扑有 82 种 kimarite，仅靠姿态可能区分不出所有技巧
 4. **博彩应用**：日本境内非法，仅限模型研究或合法地区
 5. **八百長风险**：历史上有假赛丑闻，可能引入数据噪声
-
----
-
-## 11. 给 Claude Code 的指引
-
-启动新任务时,建议按以下顺序:
-
-1. 先创建项目骨架(pyproject.toml + 目录结构)
-2. 实现 `src/data/sumo_api.py`,验证能拉到数据
-3. 实现 `src/features/structural.py` 的特征工程
-4. 在 `notebooks/02_baseline.ipynb` 中跑通 XGBoost,确认能达到 ~61% 准确率
-5. **完成 Phase 1 后再开始视频部分**,避免环境依赖混乱
-
-每个 Phase 结束做一次 commit,便于回退。
