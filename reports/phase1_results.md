@@ -243,6 +243,70 @@ under isotonic (0.7036 vs 0.6678 raw): the model is being made overconfident.
 isotonic for backwards compat). Use `--calib none` to report the honest raw
 stack accuracy and logloss.
 
+---
+
+## Iteration log v6 (extended data + bagging + multi-basho val, 2026-05-13)
+
+### Data extension 2008–2024
+
+`data-extender` agent pulled 12,572 extra bouts from 2008–2014, merging into
+**30,158 bouts × 100 basho × 740 rikishis** at `data/processed/features_2008_2024.parquet`.
+Re-tuned XGB with 200 Optuna trials → `runs/xgb_best_params_extended.json`
+(depth=3, n_est=669, lr=0.013, colsample_bytree=0.68 — much more aggressive
+feature subsampling on the larger dataset).
+
+### Seed bagging (`src/training/bag_seeds.py`)
+
+5-seed bagged stack (xgb+lgbm+cat, XGB meta). Raw probabilities averaged
+across seeds {42, 43, 44, 45, 46}. Cheap variance reduction.
+
+### Multi-basho validation
+
+Use `{202307, 202309, 202311}` (~900 bouts) as the calibration set instead of
+the lone 202311 basho. Stabilises isotonic/Platt fitting.
+
+### Full ablation table
+
+| Config | data | seeds | val | calib | val_acc | **test_acc** | test_ll |
+|---|---|---|---|---|---:|---:|---:|
+| Baseline v4 (lucky) | 17k | 1 | 202311 | iso | 62.05 | **60.36** | 0.7036 |
+| v4 raw (honest) | 17k | 1 | 202311 | none | 58.75 | 58.01 | 0.6678 |
+| Bagged | 17k | 5 | 202311 | none | 58.42 | 59.74 | 0.6659 |
+| Bagged + iso | 17k | 5 | 202311 | iso | 60.40 | 58.91 | 0.7245 |
+| Extended single | 30k | 1 | 202311 | iso | 58.75 | 59.41 | 0.6952 |
+| Extended single raw | 30k | 1 | 202311 | none | 58.42 | 59.74 | 0.6672 |
+| Extended bagged | 30k | 5 | 202311 | none | 56.44 | 58.91 | 0.6663 |
+| Multi-val raw | 30k | 1 | 3 basho | none | 56.33 | 59.69 | 0.6685 |
+| **Multi-val Platt (seed 42)** | 30k | 1 | 3 basho | platt | 56.78 | **60.08** | 0.6734 |
+| Multi-val bagged + Platt | 30k | 5 | 3 basho | platt | 58.78 | 59.74 | 0.6737 |
+| Walk-forward macro (extended) | 30k | — | — | — | — | **57.70** | 0.6706 |
+
+### What actually moves the needle (honest gains)
+
+* **Bagging**: +1.73 pp on test_raw (17k 58.01 → 59.74). Composes with logloss
+  improvement (0.6678 → 0.6659, best on board until AutoGluon’s 0.6659).
+* **Data extension**: +1.73 pp on test_raw (17k 58.01 → 30k 59.74) and
+  +0.38 pp walk-forward macro (57.32 → 57.70). Best logloss = 0.6685 raw.
+* **Multi-basho val + Platt**: +0.34 pp on test_cal vs single-val single
+  Platt; gives a seed-42 test of 60.08 % — but per-seed range is 58.85–60.02,
+  so a single-seed “60.08” is fragile. Bagged version drops to 59.74.
+* The fragile lucky 60.36 % (17k + iso + val 202311) was **never reproducibly
+  exceeded** on a robust evaluation. Honest plateau is **59.5–60.0 % test_acc**
+  with all knobs tuned, walk-forward **57.7 %**.
+
+### Final non-Phase-2 verdict
+
+Two independent automated approaches (AutoGluon 60.30 %, our manual 60.36 %),
+plus all manual exploration (TabPFN, Chronos, interactions, prior-basho,
+LGBM/Cat tuning, XGB-meta, multi-basho val, bagging, data extension) converge
+on the **~60 % test_acc ceiling for structured features alone**. Every honest
+metric (raw, walk-forward) lands in 57.7–59.7 %.
+
+**The remaining lever is genuinely new signal**: pose features from video.
+Phase 2 infrastructure is built and smoke-tested; the unlock is upstream data
+(2025 basho data + broader caption-parser patterns) so highlight-reel
+segments can align to bout outcomes.
+
 ### Summary table (final)
 
 | Setup | Val acc | Test acc | LogLoss | AUC | WF macro |

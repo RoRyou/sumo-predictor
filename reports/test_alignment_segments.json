@@ -2,81 +2,90 @@
   "video_id": "test_alignment",
   "segments": [
     {
-      "t_start": 0.0,
-      "t_end": 6.639967,
-      "dominant_caption": "Vs_MITAKEUMI",
+      "t_start": 1.835167,
+      "t_end": 5.638967,
+      "dominant_caption": "SUMQ PRIME TIME",
       "winner_name": null,
       "score": null,
       "source": "merged",
       "alignment": null
     },
     {
-      "t_start": 7.374033,
-      "t_end": 13.146467,
-      "dominant_caption": "VS-GONOYAMA",
+      "t_start": 5.638967,
+      "t_end": 11.5115,
+      "dominant_caption": "SUMQ PRIME TIME",
       "winner_name": null,
       "score": null,
       "source": "merged",
       "alignment": null
     },
     {
-      "t_start": 13.146467,
-      "t_end": 18.3183,
-      "dominant_caption": "VS-GONOYAMA",
+      "t_start": 11.5115,
+      "t_end": 14.848167,
+      "dominant_caption": "MIDORIFUJI MITAKEUMI",
       "winner_name": null,
       "score": null,
       "source": "merged",
       "alignment": null
     },
     {
-      "t_start": 18.9189,
-      "t_end": 25.025000000000002,
-      "dominant_caption": "VS-GONOYAMA",
+      "t_start": 14.848167,
+      "t_end": 20.587233,
+      "dominant_caption": "MIDORIFUJI MITAKEUMI",
       "winner_name": null,
       "score": null,
       "source": "merged",
       "alignment": null
     },
     {
-      "t_start": 25.025000000000002,
-      "t_end": 36.102733,
-      "dominant_caption": "VSHTOBIZARU",
+      "t_start": 20.587233,
+      "t_end": 31.28125,
+      "dominant_caption": "MIDORIFUJI MITAKEUMI",
       "winner_name": null,
       "score": null,
       "source": "merged",
       "alignment": null
     },
     {
-      "t_start": 36.102733,
-      "t_end": 50.483767,
-      "dominant_caption": "VSHTOBIZARU",
+      "t_start": 34.868167,
+      "t_end": 42.5425,
+      "dominant_caption": "Oshidashi Frontal push out",
       "winner_name": null,
       "score": null,
       "source": "merged",
       "alignment": null
     },
     {
-      "t_start": 58.425033,
-      "t_end": 66.099367,
-      "dominant_caption": "VS_URA",
+      "t_start": 47.781067,
+      "t_end": 50.784067,
+      "dominant_caption": "SUMQ PRIME TIME",
       "winner_name": null,
       "score": null,
       "source": "merged",
       "alignment": null
     },
     {
-      "t_start": 66.099367,
-      "t_end": 71.037633,
-      "dominant_caption": "VS_URA",
+      "t_start": 50.784067,
+      "t_end": 57.057,
+      "dominant_caption": "SUMQ PRIME TIME",
       "winner_name": null,
       "score": null,
       "source": "merged",
       "alignment": null
     },
     {
-      "t_start": 71.037633,
-      "t_end": 80.01326666666667,
-      "dominant_caption": "VS_URA",
+      "t_start": 58.525133,
+      "t_end": 65.198467,
+      "dominant_caption": "TOBIZARU SHODAI",
+      "winner_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 65.198467,
+      "t_end": 78.645233,
+      "dominant_caption": "TOBIZARU SHODAI",
       "winner_name": null,
       "score": null,
       "source": "merged",
@@ -87,92 +96,112 @@
     "ocr_segments": [
       {
         "t_start": 0.0,
-        "t_end": 6.75675,
-        "dominant_caption": "Vs_MITAKEUMI",
+        "t_end": 1.0010000000000001,
+        "dominant_caption": "Oshidashi Frontal push out",
         "winner_name": null,
         "score": null,
-        "n_samples": 27
+        "n_samples": 4
       },
       {
-        "t_start": 6.75675,
-        "t_end": 25.025000000000002,
-        "dominant_caption": "VS-GONOYAMA",
+        "t_start": 1.0010000000000001,
+        "t_end": 11.5115,
+        "dominant_caption": "SUMQ PRIME TIME",
         "winner_name": null,
         "score": null,
-        "n_samples": 46
+        "n_samples": 38
       },
       {
-        "t_start": 25.025000000000002,
-        "t_end": 54.054,
-        "dominant_caption": "VSHTOBIZARU",
+        "t_start": 11.5115,
+        "t_end": 31.28125,
+        "dominant_caption": "MIDORIFUJI MITAKEUMI",
         "winner_name": null,
         "score": null,
-        "n_samples": 70
+        "n_samples": 41
       },
       {
-        "t_start": 54.054,
-        "t_end": 80.046267,
-        "dominant_caption": "VS_URA",
+        "t_start": 31.28125,
+        "t_end": 44.79475,
+        "dominant_caption": "Oshidashi Frontal push out",
         "winner_name": null,
         "score": null,
-        "n_samples": 17
+        "n_samples": 13
+      },
+      {
+        "t_start": 44.79475,
+        "t_end": 57.057,
+        "dominant_caption": "SUMQ PRIME TIME",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 36
+      },
+      {
+        "t_start": 57.057,
+        "t_end": 80.013,
+        "dominant_caption": "TOBIZARU SHODAI",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 28
       }
     ],
     "visual_segments": [
       {
         "t_start": 0.0,
-        "t_end": 6.639967
+        "t_end": 1.835167
       },
       {
-        "t_start": 6.639967,
-        "t_end": 7.374033
+        "t_start": 1.835167,
+        "t_end": 5.638967
       },
       {
-        "t_start": 7.374033,
-        "t_end": 13.146467
+        "t_start": 5.638967,
+        "t_end": 14.848167
       },
       {
-        "t_start": 13.146467,
-        "t_end": 18.3183
+        "t_start": 14.848167,
+        "t_end": 20.587233
       },
       {
-        "t_start": 18.3183,
-        "t_end": 18.9189
+        "t_start": 20.587233,
+        "t_end": 33.4334
       },
       {
-        "t_start": 18.9189,
-        "t_end": 36.102733
+        "t_start": 33.4334,
+        "t_end": 34.868167
       },
       {
-        "t_start": 36.102733,
-        "t_end": 50.483767
+        "t_start": 34.868167,
+        "t_end": 42.5425
       },
       {
-        "t_start": 50.483767,
-        "t_end": 52.085367
+        "t_start": 42.5425,
+        "t_end": 47.781067
       },
       {
-        "t_start": 52.085367,
-        "t_end": 55.4554
+        "t_start": 47.781067,
+        "t_end": 50.784067
       },
       {
-        "t_start": 55.4554,
-        "t_end": 58.425033
+        "t_start": 50.784067,
+        "t_end": 58.525133
       },
       {
-        "t_start": 58.425033,
-        "t_end": 66.099367
+        "t_start": 58.525133,
+        "t_end": 65.198467
       },
       {
-        "t_start": 66.099367,
-        "t_end": 71.037633
+        "t_start": 65.198467,
+        "t_end": 78.645233
       },
       {
-        "t_start": 71.037633,
+        "t_start": 78.645233,
+        "t_end": 79.9799
+      },
+      {
+        "t_start": 79.9799,
         "t_end": 80.01326666666667
       }
     ],
-    "duration": 80.046267
+    "duration": 80.013
   },
-  "alignment_basho": "202407"
+  "alignment_basho": "202209"
 }
