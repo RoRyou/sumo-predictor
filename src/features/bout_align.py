@@ -99,6 +99,7 @@ class BoutAligner:
         self.bouts = bouts_df
         self._basho_lookup: dict[str, dict[str, int]] = {}
         self._basho_candidates: dict[str, list[str]] = {}
+        self._bouts_by_basho: dict[str, "pd.DataFrame"] = {}
         self._build_lookups()
 
     def _build_lookups(self) -> None:
@@ -115,6 +116,9 @@ class BoutAligner:
                     mapping.setdefault(key, int(row["westId"]))
             self._basho_lookup[str(basho_id)] = mapping
             self._basho_candidates[str(basho_id)] = list(mapping.keys())
+            # Cache the full bouts dataframe per basho (for matchup-name lookup
+            # which needs both eastId/westId, not just winnerId).
+            self._bouts_by_basho[str(basho_id)] = grp.reset_index(drop=True)
 
     # ------------------------------------------------------------------
     def match_winner(
@@ -189,21 +193,62 @@ class BoutAligner:
     ) -> BoutMatch | None:
         """Resolve one segment to a unique bout.
 
+        Resolution order:
+        1. ``winner_name`` (explicit "Winner X" caption) — most reliable.
+        2. ``matchup_names`` (two-name "A vs B" graphic) — look up the bout
+           where *both* names appear regardless of who won; the winner is
+           then read from the bout table.
+        3. ``lone_name`` (post-bout single-name banner) — same as #1.
+
         ``prior_uses`` is a mutable ``{rikishi_id -> count}`` map used to
         disambiguate when the same rikishi won multiple bouts in the
         basho.  The N-th time we see them in the segment list, we pick
         the N-th of their wins ordered by ``(day, matchNo)``.
         """
-        winner_name = segment.get("winner_name")
-        if not winner_name:
-            return None
-        rid = self.match_winner(winner_name, basho_id, cutoff=cutoff)
-        if rid is None:
-            return None
-        cb = self.candidate_bouts(rid, basho_id)
-        if cb.empty:
-            return None
+        # Path 1: explicit winner caption.
+        winner_name = segment.get("winner_name") or segment.get("lone_name")
+        if winner_name:
+            rid = self.match_winner(winner_name, basho_id, cutoff=cutoff)
+            if rid is not None:
+                cb = self.candidate_bouts(rid, basho_id)
+                if not cb.empty:
+                    return self._pick_from_candidates(cb, rid, prior_uses)
 
+        # Path 2: matchup graphic — two names.
+        matchup = segment.get("matchup_names")
+        if matchup and len(matchup) == 2:
+            id_a = self.match_winner(matchup[0], basho_id, cutoff=cutoff)
+            id_b = self.match_winner(matchup[1], basho_id, cutoff=cutoff)
+            if id_a is not None and id_b is not None and id_a != id_b:
+                # Find bout where both participate
+                bouts_in_basho = self._bouts_by_basho.get(basho_id)
+                if bouts_in_basho is not None and not bouts_in_basho.empty:
+                    pair_mask = (
+                        ((bouts_in_basho["eastId"] == id_a) & (bouts_in_basho["westId"] == id_b))
+                        | ((bouts_in_basho["eastId"] == id_b) & (bouts_in_basho["westId"] == id_a))
+                    )
+                    cb = bouts_in_basho[pair_mask].sort_values(["day", "matchNo"]).reset_index(drop=True)
+                    if not cb.empty:
+                        idx = 0
+                        if prior_uses is not None:
+                            key = -1 * (min(id_a, id_b) * 10000 + max(id_a, id_b))
+                            idx = prior_uses.get(key, 0)
+                            prior_uses[key] = idx + 1
+                        idx = min(idx, len(cb) - 1)
+                        row = cb.iloc[idx]
+                        return BoutMatch(
+                            bashoId=str(row["bashoId"]),
+                            day=int(row["day"]),
+                            matchNo=int(row["matchNo"]),
+                            eastId=int(row["eastId"]),
+                            westId=int(row["westId"]),
+                            winnerId=int(row["winnerId"]),
+                            kimarite=(None if row["kimarite"] is None else str(row["kimarite"])),
+                            y_east=int(int(row["winnerId"]) == int(row["eastId"])),
+                        )
+        return None
+
+    def _pick_from_candidates(self, cb, rid, prior_uses):
         idx = 0
         if prior_uses is not None:
             idx = prior_uses.get(rid, 0)

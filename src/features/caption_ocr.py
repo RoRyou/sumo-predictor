@@ -50,6 +50,28 @@ _WINNER_RE = re.compile(
     r"winner\s+([A-Z][A-Za-z'\-]{2,})",
     re.IGNORECASE,
 )
+# Matchup graphic: "RIKISHI_A vs RIKISHI_B" (case-insensitive 'vs', possibly with
+# extra rank text around the names).  Accept en-dash / em-dash too.
+_VS_RE = re.compile(
+    r"\b([A-Z][A-Za-z'\-]{2,})\s+(?:vs|VS|v\.?|–|—|—|×)\s+([A-Z][A-Za-z'\-]{2,})\b",
+    re.IGNORECASE,
+)
+# Sumo PRIME TIME style matchup: two ALL-CAPS names separated by whitespace
+# (no "vs" word).  e.g. "MIDORIFUJI MITAKEUMI" — common on the matchup card.
+_TWO_CAPS_RE = re.compile(r"^\s*([A-Z][A-Z'\-]{3,})\s+([A-Z][A-Z'\-]{3,})\s*$")
+# A standalone all-caps name 5+ chars (post-bout celebration banner).
+# Conservative: only accept if it's by itself OR adjacent to a score.
+_LONE_NAME_RE = re.compile(r"^\s*([A-Z][A-Z'\-]{4,})\s*(?:\d{1,2}\s*[-_/]\s*\d{1,2}\s*)?$")
+
+# Show-title / overlay junk we don't want to mis-parse as a rikishi name.
+_OVERLAY_JUNK = {
+    "SUMO", "PRIME", "TIME", "NHK", "WORLD", "TONIGHT", "TOMORROW",
+    "YOKOZUNA", "OZEKI", "SEKIWAKE", "KOMUSUBI", "MAEGASHIRA", "JURYO",
+    "EAST", "WEST", "WINNER", "TOURNAMENT", "REPLAY", "LIVE",
+    "OSHIDASHI", "YORIKIRI", "HATAKIKOMI", "TSUKIDASHI", "OKURIDASHI",
+    "FRONTAL", "PUSH", "OUT", "FORCE", "FORCED", "FORCING",
+    "SUMQ",  # frequent OCR misread of "SUMO"
+}
 _SCORE_RE = re.compile(r"\b(\d{1,2})\s*[-_/]\s*(\d{1,2})\b")
 
 
@@ -78,6 +100,72 @@ def parse_winner(text: str) -> str | None:
     if len(name) < 3:
         return None
     return name
+
+
+def parse_matchup(text: str) -> list[str] | None:
+    """Pull two rikishi names from a matchup graphic.
+
+    Recognises:
+    * ``X vs Y`` (case-insensitive vs / v. / dash variants)
+    * ``X Y`` — two ALL-CAPS names separated by whitespace (Sumo Prime Time
+      matchup card format)
+
+    Returns ``[name_left, name_right]`` (both UPPER) or ``None``.  Names are
+    typically in screen-reading order; downstream aligner can disambiguate
+    east/west via the bout table.
+    """
+    # Pattern 1: explicit "vs"
+    m = _VS_RE.search(text)
+    if m:
+        a, b = m.group(1).upper(), m.group(2).upper()
+    else:
+        # Pattern 2: two consecutive ALL-CAPS names with no "vs"
+        m2 = _TWO_CAPS_RE.match(text.strip())
+        if not m2:
+            return None
+        a, b = m2.group(1).upper(), m2.group(2).upper()
+    if len(a) < 3 or len(b) < 3 or a == b:
+        return None
+    # Drop if either token is a known overlay/junk
+    if a in _OVERLAY_JUNK or b in _OVERLAY_JUNK:
+        return None
+    return [a, b]
+
+
+def parse_lone_name(text: str) -> str | None:
+    """A single all-caps rikishi name occupying a caption — often the post-bout
+    'celebration' banner.  Very conservative to avoid false positives on
+    rank labels like 'YOKOZUNA'.
+    """
+    BLACKLIST = {
+        "YOKOZUNA", "OZEKI", "SEKIWAKE", "KOMUSUBI", "MAEGASHIRA", "JURYO",
+        "EAST", "WEST", "WINNER", "TODAY", "TOMORROW", "TOURNAMENT",
+        "REPLAY", "TONIGHT", "LIVE",
+    }
+    m = _LONE_NAME_RE.match(text.strip())
+    if not m:
+        return None
+    name = m.group(1).upper()
+    if name in BLACKLIST or len(name) < 5:
+        return None
+    return name
+
+
+def parse_caption(text: str) -> dict:
+    """Combined caption parser.  Returns a dict with any of:
+
+    * ``winner_name`` — explicit winner ("Winner X" pattern)
+    * ``matchup_names`` — two-name matchup graphic
+    * ``lone_name`` — single dominant rikishi banner
+    * ``score`` — "1-0" style score string
+    """
+    out: dict = {
+        "winner_name": parse_winner(text),
+        "matchup_names": parse_matchup(text),
+        "lone_name": parse_lone_name(text),
+        "score": parse_score(text),
+    }
+    return out
 
 
 def parse_score(text: str) -> str | None:
@@ -243,9 +331,23 @@ class Segment:
     winner_name: str | None = None
     score: str | None = None
     n_samples: int = 0
+    # New (v2): multi-pattern parse results
+    matchup_names: list[str] | None = None  # ["NAME_LEFT", "NAME_RIGHT"]
+    lone_name: str | None = None            # post-bout single-name banner
 
     def duration(self) -> float:
         return self.t_end - self.t_start
+
+    def best_name_hints(self) -> list[str]:
+        """Names worth trying for bout alignment (winner first, then matchup pair)."""
+        hints: list[str] = []
+        if self.winner_name:
+            hints.append(self.winner_name)
+        if self.lone_name:
+            hints.append(self.lone_name)
+        if self.matchup_names:
+            hints.extend(self.matchup_names)
+        return hints
 
 
 class SegmentBuilder:
@@ -324,13 +426,37 @@ class SegmentBuilder:
             else:
                 dom = ""
 
+            # Try all parse patterns; fall back to nothing.
+            if dom:
+                # Also look at *all* texts in the group, not just dominant —
+                # matchup graphics often flicker, dominant may be empty/junk.
+                winner = parse_winner(dom)
+                matchup = parse_matchup(dom)
+                lone = parse_lone_name(dom)
+                # Try other texts in segment if dominant didn't yield a match
+                if winner is None or matchup is None:
+                    for t in set(texts):
+                        if winner is None:
+                            winner = parse_winner(t)
+                        if matchup is None:
+                            matchup = parse_matchup(t)
+                        if lone is None:
+                            lone = parse_lone_name(t)
+                        if winner and matchup and lone:
+                            break
+                score = parse_score(dom)
+            else:
+                winner = matchup = lone = score = None
+
             seg = Segment(
                 t_start=float(t_start),
                 t_end=float(t_end),
                 dominant_caption=dom,
-                winner_name=parse_winner(dom) if dom else None,
-                score=parse_score(dom) if dom else None,
+                winner_name=winner,
+                score=score,
                 n_samples=len(group),
+                matchup_names=matchup,
+                lone_name=lone,
             )
             segments.append(seg)
 
