@@ -1,0 +1,152 @@
+{
+  "video_id": "smoke",
+  "segments": [
+    {
+      "t_start": 2.266667,
+      "t_end": 11.5,
+      "dominant_caption": "",
+      "winner_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 20.8,
+      "t_end": 25.366667,
+      "dominant_caption": "Winner FUJINOKAWA 1-0",
+      "winner_name": "FUJINOKAWA",
+      "score": "1-0",
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 25.366667,
+      "t_end": 29.366667,
+      "dominant_caption": "Winner FUJINOKAWA 1-0",
+      "winner_name": "FUJINOKAWA",
+      "score": "1-0",
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 29.366667,
+      "t_end": 33.933333,
+      "dominant_caption": "Winner FUJINOKAWA 1-0",
+      "winner_name": "FUJINOKAWA",
+      "score": "1-0",
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 33.933333,
+      "t_end": 40.0,
+      "dominant_caption": "Winner FUJINOKAWA 1-0",
+      "winner_name": "FUJINOKAWA",
+      "score": "1-0",
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 40.0,
+      "t_end": 49.366667,
+      "dominant_caption": "Tsukidashi Frontal thrust out",
+      "winner_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 49.366667,
+      "t_end": 60.0,
+      "dominant_caption": "Tsukidashi Frontal thrust out",
+      "winner_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    }
+  ],
+  "meta": {
+    "ocr_segments": [
+      {
+        "t_start": 0.0,
+        "t_end": 11.5,
+        "dominant_caption": "",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 46
+      },
+      {
+        "t_start": 11.5,
+        "t_end": 40.0,
+        "dominant_caption": "Winner FUJINOKAWA 1-0",
+        "winner_name": "FUJINOKAWA",
+        "score": "1-0",
+        "n_samples": 68
+      },
+      {
+        "t_start": 40.0,
+        "t_end": 60.009002,
+        "dominant_caption": "Tsukidashi Frontal thrust out",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 6
+      }
+    ],
+    "visual_segments": [
+      {
+        "t_start": 0.0,
+        "t_end": 0.9
+      },
+      {
+        "t_start": 0.9,
+        "t_end": 2.266667
+      },
+      {
+        "t_start": 2.266667,
+        "t_end": 13.3
+      },
+      {
+        "t_start": 13.3,
+        "t_end": 13.833333
+      },
+      {
+        "t_start": 13.833333,
+        "t_end": 14.433333
+      },
+      {
+        "t_start": 14.433333,
+        "t_end": 15.9
+      },
+      {
+        "t_start": 15.9,
+        "t_end": 18.5
+      },
+      {
+        "t_start": 18.5,
+        "t_end": 20.8
+      },
+      {
+        "t_start": 20.8,
+        "t_end": 25.366667
+      },
+      {
+        "t_start": 25.366667,
+        "t_end": 29.366667
+      },
+      {
+        "t_start": 29.366667,
+        "t_end": 33.933333
+      },
+      {
+        "t_start": 33.933333,
+        "t_end": 49.366667
+      },
+      {
+        "t_start": 49.366667,
+        "t_end": 60.0
+      }
+    ],
+    "duration": 60.009002
+  },
+  "alignment_basho": "202505"
+}

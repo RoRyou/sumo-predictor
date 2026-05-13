@@ -193,6 +193,56 @@ To push past 60.36% test acc we need **new feature streams**, not new models:
 | **Baseline papers** | 55–61% |
 | **Phase 1 verdict** | Matched / slightly above the published baseline. **Plateau is data-limited; further gains require video signal or more history.**
 
+---
+
+## Iteration log v5 (interactions + calibration ablation, 2026-05-13)
+
+### Hand-crafted interaction features (`src/features/interactions.py`)
+
+14 interactions added: `rank_diff × winrate`, `day × streak`, `kachi_pressure_diff`,
+`career_winrate_diff`, `h2h_weighted`, `height × weight`, `push_vs_belt`, etc.
+
+| Setup | val | test | Δ test |
+|---|---:|---:|---:|
+| Baseline (no interactions) | 62.05 | **60.36** | — |
+| + 14 interactions (full) | 62.05 | 59.52 | −0.84 |
+| + 5 interactions (top by importance) | 60.73 | 59.24 | −1.12 |
+
+`ix_career_winrate_diff` ranks #1 by feature importance but **hurts** test accuracy.
+Same failure mode as Chronos embeddings: trees already learn these interactions
+implicitly; explicit columns add correlated noise. Code kept for ablation record.
+
+### Calibration ablation — exposes the "60.36%" as partially lucky
+
+The Phase-1 headline of 60.36% test acc uses isotonic calibration on val=202311.
+Sweep across (val_basho × calib_method):
+
+| val_basho | calib | val_cal | **test_cal** | test_logloss |
+|---|---|---:|---:|---:|
+| 202311 | **isotonic** | 62.05 | **60.36** ⭐ | 0.7036 |
+| 202311 | platt | 58.75 | 59.46 | 0.6784 |
+| 202311 | none (raw) | 58.75 | 58.01 | 0.6678 |
+| 202309 | isotonic | 61.67 | 58.79 | 0.7487 |
+| 202309 | platt | 55.00 | 55.78 | 0.6820 |
+| 202309 | none (raw) | 61.33 | 59.18 | 0.6664 |
+
+Test acc swings **4.6 pp** depending on val basho × calib choice. Mean over the
+6 configs: **58.6%** (or 59.2% dropping the 55.8 outlier).
+
+The 60.36% headline gain over `none/raw` (58.01%) is **entirely a threshold-tuning
+effect**: isotonic is monotone, so AUC stays at 0.6259 — accuracy moves because
+isotonic shifts the implicit decision boundary away from 0.5. Logloss is *worse*
+under isotonic (0.7036 vs 0.6678 raw): the model is being made overconfident.
+
+**Honest plateau estimate**: ~**58–59% test acc** ± val-basho noise. Walk-forward
+57.32% is consistent with this. The 60.36% is real but fragile and overstated.
+
+### CLI changes
+
+`src/training/train_struct.py` adds `--calib {isotonic,platt,none}` (default
+isotonic for backwards compat). Use `--calib none` to report the honest raw
+stack accuracy and logloss.
+
 ### Summary table (final)
 
 | Setup | Val acc | Test acc | LogLoss | AUC | WF macro |

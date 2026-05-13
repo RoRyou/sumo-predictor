@@ -470,6 +470,7 @@ def run(
     lgbm_params_path: Path | None = None,
     cat_params_path: Path | None = None,
     meta: str = "lr",
+    calib: str = "isotonic",  # "isotonic" | "platt" | "none"
 ) -> dict[str, Any]:
     from src.features.structural import (
         KimariteMatchupTable,
@@ -555,17 +556,30 @@ def run(
         meta=meta,
     )
 
-    # T5: Calibration (Platt) on val
+    # T5: Calibration on val.  Isotonic is flexible but can over-fit a small
+    # val basho (303 bouts); Platt (sigmoid) is the more robust default and
+    # is what we now use unless `calib='isotonic'` is passed.
     cal_val_proba = stack.val_proba
     cal_test_proba = stack.test_proba
     if len(y_val) and len(np.unique(y_val)) > 1:
         from sklearn.isotonic import IsotonicRegression
+        from sklearn.linear_model import LogisticRegression as _LR
 
-        iso = IsotonicRegression(out_of_bounds="clip")
-        iso.fit(stack.val_proba, y_val)
-        cal_val_proba = iso.transform(stack.val_proba)
-        if len(cal_test_proba):
-            cal_test_proba = iso.transform(stack.test_proba)
+        if calib == "isotonic":
+            iso = IsotonicRegression(out_of_bounds="clip")
+            iso.fit(stack.val_proba, y_val)
+            cal_val_proba = iso.transform(stack.val_proba)
+            if len(cal_test_proba):
+                cal_test_proba = iso.transform(stack.test_proba)
+        elif calib == "platt":
+            # Sigmoid (Platt) — 2-parameter calibration is well-suited to
+            # the tiny val (303 rows here).
+            lr = _LR(C=1.0, max_iter=200)
+            lr.fit(stack.val_proba.reshape(-1, 1), y_val)
+            cal_val_proba = lr.predict_proba(stack.val_proba.reshape(-1, 1))[:, 1]
+            if len(cal_test_proba):
+                cal_test_proba = lr.predict_proba(stack.test_proba.reshape(-1, 1))[:, 1]
+        # else: calib == "none", leave raw
 
     # ----- Report -----
     metrics: dict[str, Any] = {}
@@ -624,6 +638,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         lgbm_params_path=Path(args.lgbm_params) if args.lgbm_params else None,
         cat_params_path=Path(args.cat_params) if args.cat_params else None,
         meta=args.meta,
+        calib=args.calib,
     )
     print(json.dumps(metrics, indent=2, default=str))
     return 0
@@ -653,6 +668,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
                    help="path to JSON of CatBoost best params (from Optuna)")
     r.add_argument("--meta", choices=["lr", "xgb"], default="lr",
                    help="meta-learner type (lr = LogisticRegression, xgb = small XGB)")
+    r.add_argument("--calib", choices=["isotonic", "platt", "none"], default="isotonic",
+                   help="probability calibration on val set (default isotonic)")
     r.add_argument("-v", "--verbose", action="count", default=1)
     r.set_defaults(func=cmd_run)
     return p

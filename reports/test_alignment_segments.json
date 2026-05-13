@@ -1,0 +1,178 @@
+{
+  "video_id": "test_alignment",
+  "segments": [
+    {
+      "t_start": 0.0,
+      "t_end": 6.639967,
+      "dominant_caption": "Vs_MITAKEUMI",
+      "winner_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 7.374033,
+      "t_end": 13.146467,
+      "dominant_caption": "VS-GONOYAMA",
+      "winner_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 13.146467,
+      "t_end": 18.3183,
+      "dominant_caption": "VS-GONOYAMA",
+      "winner_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 18.9189,
+      "t_end": 25.025000000000002,
+      "dominant_caption": "VS-GONOYAMA",
+      "winner_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 25.025000000000002,
+      "t_end": 36.102733,
+      "dominant_caption": "VSHTOBIZARU",
+      "winner_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 36.102733,
+      "t_end": 50.483767,
+      "dominant_caption": "VSHTOBIZARU",
+      "winner_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 58.425033,
+      "t_end": 66.099367,
+      "dominant_caption": "VS_URA",
+      "winner_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 66.099367,
+      "t_end": 71.037633,
+      "dominant_caption": "VS_URA",
+      "winner_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    },
+    {
+      "t_start": 71.037633,
+      "t_end": 80.01326666666667,
+      "dominant_caption": "VS_URA",
+      "winner_name": null,
+      "score": null,
+      "source": "merged",
+      "alignment": null
+    }
+  ],
+  "meta": {
+    "ocr_segments": [
+      {
+        "t_start": 0.0,
+        "t_end": 6.75675,
+        "dominant_caption": "Vs_MITAKEUMI",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 27
+      },
+      {
+        "t_start": 6.75675,
+        "t_end": 25.025000000000002,
+        "dominant_caption": "VS-GONOYAMA",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 46
+      },
+      {
+        "t_start": 25.025000000000002,
+        "t_end": 54.054,
+        "dominant_caption": "VSHTOBIZARU",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 70
+      },
+      {
+        "t_start": 54.054,
+        "t_end": 80.046267,
+        "dominant_caption": "VS_URA",
+        "winner_name": null,
+        "score": null,
+        "n_samples": 17
+      }
+    ],
+    "visual_segments": [
+      {
+        "t_start": 0.0,
+        "t_end": 6.639967
+      },
+      {
+        "t_start": 6.639967,
+        "t_end": 7.374033
+      },
+      {
+        "t_start": 7.374033,
+        "t_end": 13.146467
+      },
+      {
+        "t_start": 13.146467,
+        "t_end": 18.3183
+      },
+      {
+        "t_start": 18.3183,
+        "t_end": 18.9189
+      },
+      {
+        "t_start": 18.9189,
+        "t_end": 36.102733
+      },
+      {
+        "t_start": 36.102733,
+        "t_end": 50.483767
+      },
+      {
+        "t_start": 50.483767,
+        "t_end": 52.085367
+      },
+      {
+        "t_start": 52.085367,
+        "t_end": 55.4554
+      },
+      {
+        "t_start": 55.4554,
+        "t_end": 58.425033
+      },
+      {
+        "t_start": 58.425033,
+        "t_end": 66.099367
+      },
+      {
+        "t_start": 66.099367,
+        "t_end": 71.037633
+      },
+      {
+        "t_start": 71.037633,
+        "t_end": 80.01326666666667
+      }
+    ],
+    "duration": 80.046267
+  },
+  "alignment_basho": "202407"
+}

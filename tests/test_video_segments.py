@@ -269,3 +269,82 @@ def test_caption_detector_construction(tmp_path):
     assert det.sample_fps == 2.0
     assert det.band == (0.6, 1.0)
     assert det.languages == ["en"]
+
+
+# ---------------------------------------------------------------------- #
+# Alignment integration -- `--align-to-basho` adds bout columns
+# ---------------------------------------------------------------------- #
+def test_run_with_align_to_basho_adds_bout_columns(tmp_path, monkeypatch):
+    """When `align_to_basho` is set, output parquet includes bout schema."""
+    pd = pytest.importorskip("pandas")
+
+    from src.features import extract_bout_features as ebf
+
+    # One segment for Terunofuji (which has 1 win in 202307), and one with no
+    # winner caption -- the second should be dropped when drop_unaligned=True.
+    fake_segments = [
+        {
+            "t_start": 0.0,
+            "t_end": 4.0,
+            "winner_name": "Terunofuji",
+            "score": "1-0",
+            "dominant_caption": "Winner Terunofuji 1-0",
+            "source": "merged",
+        },
+        {
+            "t_start": 4.0,
+            "t_end": 8.0,
+            "winner_name": None,
+            "score": None,
+            "dominant_caption": "",
+            "source": "visual",
+        },
+    ]
+    fake_meta = {"ocr_segments": [], "visual_segments": [], "duration": 8.0}
+
+    monkeypatch.setattr(
+        ebf, "detect_segments", lambda *a, **k: (fake_segments, fake_meta)
+    )
+    monkeypatch.setattr(
+        ebf,
+        "_read_segment_frames",
+        lambda video_path, t0, t1, target_fps=15.0: (
+            np.zeros((20, 64, 64, 3), dtype=np.uint8),
+            15.0,
+        ),
+    )
+
+    def _fake_pose(frames, fps, extractor=None):
+        T = frames.shape[0]
+        kp = np.zeros((T, 2, 17, 3), dtype=np.float32)
+        kp[:, :, :, 2] = 0.7
+        feats = np.ones((T, len(FEATURE_NAMES)), dtype=np.float32) * 0.5
+        return kp, feats
+
+    monkeypatch.setattr(ebf, "_run_pose_pipeline", _fake_pose)
+
+    video = tmp_path / "fake.mp4"
+    video.write_bytes(b"")
+    segs_out = tmp_path / "segs.json"
+    feat_out = tmp_path / "features.parquet"
+
+    ebf.run(
+        video,
+        segs_out,
+        feat_out,
+        use_ocr=False,
+        video_id="fake",
+        align_to_basho="202307",
+        rikishis_parquet="data/raw/rikishis.parquet",
+        bouts_parquet="data/raw/bouts.parquet",
+        drop_unaligned=True,
+    )
+
+    df = pd.read_parquet(feat_out)
+    # only the Terunofuji segment survives
+    assert len(df) == 1
+    for col in ("bashoId", "day", "matchNo", "eastId", "westId", "winnerId", "y_east"):
+        assert col in df.columns, col
+    assert df.iloc[0]["bashoId"] == "202307"
+    assert int(df.iloc[0]["winnerId"]) == 45
+    assert df.iloc[0]["y_east"] in (0, 1)

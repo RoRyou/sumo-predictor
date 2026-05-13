@@ -252,8 +252,19 @@ def run(
     min_dur: float = 3.0,
     video_id: str | None = None,
     pose_extractor: Any | None = None,
+    align_to_basho: str | None = None,
+    rikishis_parquet: str | Path | None = None,
+    bouts_parquet: str | Path | None = None,
+    drop_unaligned: bool = True,
 ) -> tuple[Path, Path]:
-    """End-to-end: segment → pose → aggregated parquet."""
+    """End-to-end: segment → pose → (optional bout alignment) → parquet.
+
+    When ``align_to_basho`` is set, each segment's OCR'd ``winner_name``
+    is mapped to a sumo-api bout via :class:`src.features.bout_align.BoutAligner`.
+    The matched ``bashoId, day, matchNo, eastId, westId, winnerId,
+    kimarite, y_east`` are attached to the row, and rows without a
+    successful alignment are dropped (when ``drop_unaligned`` is True).
+    """
     import pandas as pd
 
     video_path = Path(video_path)
@@ -268,7 +279,34 @@ def run(
     )
     logger.info("Final merged segments (>= %.1fs): %d", min_dur, len(segments))
 
-    payload = {"video_id": video_id, "segments": segments, "meta": meta}
+    # Optional bout alignment ------------------------------------------------
+    aligner = None
+    if align_to_basho is not None:
+        from src.features.bout_align import BoutAligner
+
+        if rikishis_parquet is None or bouts_parquet is None:
+            raise ValueError(
+                "align_to_basho requires rikishis_parquet and bouts_parquet"
+            )
+        aligner = BoutAligner(
+            pd.read_parquet(rikishis_parquet),
+            pd.read_parquet(bouts_parquet),
+        )
+        segments = aligner.align_segments(segments, str(align_to_basho))
+        n_resolved = sum(1 for s in segments if s.get("alignment") is not None)
+        logger.info(
+            "Aligned %d / %d segments to bouts in basho %s",
+            n_resolved,
+            len(segments),
+            align_to_basho,
+        )
+
+    payload = {
+        "video_id": video_id,
+        "segments": segments,
+        "meta": meta,
+        "alignment_basho": align_to_basho,
+    }
     Path(segments_out).parent.mkdir(parents=True, exist_ok=True)
     Path(segments_out).write_text(json.dumps(payload, indent=2))
 
@@ -292,9 +330,25 @@ def run(
         else:
             kp_seq, feats = _run_pose_pipeline(frames, fps, extractor=pose_extractor)
         row = aggregate_segment_row(video_id, idx, seg, feats, kp_seq)
+        # Attach alignment fields if present
+        align = seg.get("alignment")
+        if align is not None:
+            row["bashoId"] = align["bashoId"]
+            row["day"] = int(align["day"])
+            row["matchNo"] = int(align["matchNo"])
+            row["eastId"] = int(align["eastId"])
+            row["westId"] = int(align["westId"])
+            row["winnerId"] = int(align["winnerId"])
+            row["kimarite"] = align["kimarite"]
+            row["y_east"] = int(align["y_east"])
         rows.append(row)
 
     df = pd.DataFrame(rows)
+    if align_to_basho is not None and drop_unaligned:
+        before = len(df)
+        df = df[df.get("winnerId").notna()] if "winnerId" in df.columns else df.iloc[0:0]
+        logger.info("Dropped %d unaligned rows; kept %d", before - len(df), len(df))
+
     Path(features_out).parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(features_out, index=False)
     logger.info("Wrote %d rows to %s", len(df), features_out)
@@ -366,6 +420,10 @@ def _cmd_run(args: argparse.Namespace) -> int:
         target_fps=args.fps,
         visual_threshold=args.scene_threshold,
         min_dur=args.min_dur,
+        align_to_basho=args.align_to_basho,
+        rikishis_parquet=args.rikishis,
+        bouts_parquet=args.bouts,
+        drop_unaligned=not args.keep_unaligned,
     )
     # save overlay
     if args.overlay:
@@ -391,6 +449,24 @@ def build_parser() -> argparse.ArgumentParser:
     run_p.add_argument("--min-dur", type=float, default=3.0)
     run_p.add_argument("--no-ocr", action="store_true", help="skip caption OCR (visual-only)")
     run_p.add_argument("--overlay", type=Path, default=None)
+    run_p.add_argument(
+        "--align-to-basho",
+        dest="align_to_basho",
+        type=str,
+        default=None,
+        help="bashoId (e.g. 202307) to align OCR winners against",
+    )
+    run_p.add_argument(
+        "--rikishis", type=Path, default=Path("data/raw/rikishis.parquet")
+    )
+    run_p.add_argument(
+        "--bouts", type=Path, default=Path("data/raw/bouts.parquet")
+    )
+    run_p.add_argument(
+        "--keep-unaligned",
+        action="store_true",
+        help="don't drop rows whose segments didn't align to a bout",
+    )
     run_p.set_defaults(func=_cmd_run)
     return p
 
