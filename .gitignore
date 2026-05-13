@@ -1,0 +1,71 @@
+# Data
+data/raw/
+data/videos/
+data/processed/
+data/interim/
+data/cache/
+*.parquet
+*.feather
+*.pkl
+*.npy
+*.npz
+*.h5
+*.csv
+!data/sample/*.csv
+
+# Models
+*.pt
+*.pth
+*.onnx
+*.bin
+*.safetensors
+models/
+checkpoints/
+lightning_logs/
+mlruns/
+wandb/
+runs/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Jupyter
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+
+# Environments
+.env
+.env.*
+.venv/
+venv/
+env/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Temp
+tmp/
+temp/
