@@ -876,6 +876,81 @@ structural side is expected to plateau; meaningful improvement now needs either
 (a) more aligned video bouts (currently 83), (b) external data (betting markets,
 injury reports), or (c) genuinely novel feature streams not present in sumo-api.
 
+## v12 — GNN on rikishi h2h graph (2026-05-15, post-SOTA v3)
+
+User question: 60% 太低，DL 怎么样？All deep tabular tried earlier (FT-Transformer,
+TabTransformer, GANDALF, TabPFN v2, pytorch_tabular MLP) converged at 59-60%. The
+one **untried DL angle** was Graph Neural Network on the rikishi h2h network.
+
+### Setup
+
+* Graph: 207 rikishi as nodes, 32,003 cleaned bouts as directed (winner→loser) edges.
+* Cleaning applied: filter fusen (no-show, 326 bouts), drop 1 rikishi missing from
+  master table, impute early-career winrate NaN with median.
+* Node features: standardised (height, weight, age_at_2025) + one-hot heya 
+  (40+ values, rare ones bucketed) + one-hot shusshin region.
+* Model: 2-layer GraphSAGE + learnable 32-dim per-rikishi ID embedding +
+  edge-prediction MLP head on (eA, eB, |eA-eB|, eA*eB).
+* Trained on bouts < 202311 with symmetric augmentation; calibrated on val.
+
+### Standalone results (10-seed bag, `runs/gnn_v3/`)
+
+| Variant | val_acc | test_acc | logloss | auc |
+|---|---:|---:|---:|---:|
+| raw   | 59.41 | 56.34 | 0.6837 | 0.587 |
+| iso   | 60.40 | 56.45 | 0.7402 | 0.587 |
+
+GNN underperforms Elo standalone (Elo test=57.68%) — the static graph snapshot
+doesn't capture time-evolving skill. To beat Elo, we'd need a temporal GNN
+(TGN/JODIE) computing per-bout dynamic embeddings, which is substantial extra work.
+
+### Integration into SOTA v3 (5-way ensemble)
+
+5-way (bag_mix + ag + lucky + uniform_xgb + GNN), honest val-acc selection:
+
+| Variant | val | test | Δ test vs SOTA v3 |
+|---|---:|---:|---:|
+| SOTA v3 (4-way) | 62.38 | 61.08 | — |
+| 5-way + GNN_raw, best by val | 62.71 | 60.97 | **−0.11** |
+| 5-way + GNN_iso, best by val | 63.70 | 60.41 | −0.67 |
+
+**Honest finding**: GNN adds val signal (+0.33pp val_acc) but does NOT improve test.
+The val improvement comes from GNN's iso calibration over-fitting the 303-bout val
+basho; this val gain does not generalize to test.
+
+### Why GNN doesn't break the plateau
+
+1. **Information-theoretic ceiling**: error analysis shows 60% of test bouts are
+   tight matchups (|rank_diff|≤5) with intrinsic accuracy ~59.6%. These bouts
+   are inherently random — no architecture can predict 5-second physical contests
+   when contestants have similar skill.
+2. **Static graph limitation**: skill evolves continuously; a single graph snapshot
+   at train cutoff doesn't reflect val/test-time skill state. Temporal GNN could
+   help but at substantial complexity cost.
+3. **Already-encoded structure**: Elo and TrueSkill (in skill_ratings.py) implicitly
+   capture the h2h network's score propagation via iterative rating updates. GNN
+   essentially learns a similar structure with weaker inductive bias.
+
+### Final verdict
+
+**Plateau at 61.08% test is genuine** for the structural+pose-on-aligned-83
+information set. To push past this:
+
+* **Best ROI**: increase aligned video bouts. Current 83 aligned (out of 1791 test)
+  give 4pp uplift on that subset. Scaling to 500+ aligned should add another 
+  0.5-1pp to overall test_acc.
+* **External data**: betting markets, injury reports, training data — not 
+  available via sumo-api.
+* **Temporal GNN**: ~30-60 min impl + 10-min training; likely +0.2-0.5pp at best.
+
+SOTA v3 remains the recommended production model.
+
+### Failed at val-honest test (extended)
+
+| # | Method | test_acc | rejected because |
+|---|---|---:|---|
+| 18 | GraphSAGE on h2h (10-seed) | 56.45 standalone, 60.97 in 5-way | val gain (+0.33pp) doesn't translate to test |
+
 
 
 
