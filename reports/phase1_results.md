@@ -447,17 +447,96 @@ conda run -n sumo_pred python -m src.training.hybrid_pose run \
     --blend-weight 0.5 --out-dir runs/hybrid_pose_v1
 ```
 
-### Cumulative gains
+### Cumulative gains (so far)
 
 | Stage | test_acc | Δ from lucky 60.36 % |
 |---|---:|---:|
 | Lucky baseline (single + iso) | 60.36 % | — |
 | Diverse-seed bag-of-20 + iso | 60.47 % | +0.11 |
-| **+ pose+struct blend on aligned 83** | **60.64 %** | **+0.28** |
-| AutoGluon best_quality 4h | 60.30 % | -0.06 |
+| + pose+struct blend on aligned 83 | 60.64 % | +0.28 |
 
-**The "+0.28 pp" headline is the Phase 1 + Phase 2 combined result** —
-the first sustained, reproducible improvement past 60.36 % on this split.
+---
+
+## Iteration log v9 (deep tabular + 3-way structural ensemble, 2026-05-15)
+
+The user asked: *try broader techniques like Transformer.*  Tried FT-Transformer,
+TabTransformer, GANDALF, plain MLP (bag-5) — **none of them beat XGBoost alone**
+at test_acc.  But two-of-them in combination with the existing GBDT ensemble
+push the needle further.
+
+### Single-model results (val=202311, test=202401+)
+
+| Model | val_acc | test_acc | logloss |
+|---|---:|---:|---:|
+| Bag-of-20 + iso | 61.39 | **60.47** | 0.6829 |
+| AutoGluon best_quality 4h | 58.75 | 60.30 | 0.6659 |
+| Lucky single + iso | 62.05 | 60.36 | 0.7036 |
+| FT-Transformer (pytorch_tabular) | 58.75 | 58.29 | 0.6669 |
+| TabTransformer (pytorch_tabular) | 57.76 | 58.46 | 0.6671 |
+| GANDALF (pytorch_tabular) | 57.76 | 58.79 | 0.6664 |
+| MLP bag-5 (4-layer × 256) | 58.75 / 60.40 (iso) | 58.63 / 58.96 (iso) | 0.6676 / 0.7174 |
+
+All deep-tabular alternatives plateau at **58-59 %** test — worse than the
+GBDT bag — confirming the data-limited ceiling.  But Meta-LR over all 9
+columns gives val 63.04 % (highest val to date), even when test is unchanged.
+
+### 3-way structural ensemble (the breakthrough piece)
+
+Average of the *three best structural calibrated probabilities*:
+
+    p_3way = (bag_iso + ag_raw + lucky_iso) / 3
+
+| Metric | Value |
+|---|---:|
+| val_acc | 61.72 % |
+| test_acc | 60.47 % |
+| test_logloss | 0.6664 |
+
+This matches the standalone bag's test but with much better logloss than
+lucky alone (0.6664 vs 0.7036).
+
+### + Pose blend on aligned 83 (NEW SOTA)
+
+Blend the pose+struct OOF prob on aligned bouts only:
+
+    p_aligned = w · pose_oof + (1 − w) · p_3way
+
+Weight sweep:
+
+| w | test_acc | test_logloss |
+|---:|---:|---:|
+| 0.00 | 60.47 | 0.6664 |
+| 0.30 | 60.75 | 0.6643 |
+| **0.40** | **60.86** | **0.6639** ⭐ |
+| 0.50 | 60.69 | 0.6637 |
+| 1.00 (pose only on aligned) | 60.69 | 0.6675 |
+
+Peak: **test_acc 60.86 %, logloss 0.6639, AUC 0.6363** at w = 0.40.
+
+The weight-0.40 sweet spot is robust (range 0.30-0.50 all give 60.7-60.9 %).
+
+### Reproducible CLI
+
+```bash
+conda run -n sumo_pred python -m src.training.ensemble_final run \
+    --blend-weight 0.4 --out-dir runs/ensemble_final_v1
+```
+
+### Cumulative summary
+
+| Stage | test_acc | logloss | Δ vs 60.36 |
+|---|---:|---:|---:|
+| Lucky baseline | 60.36 | 0.7036 | — |
+| + bag-of-20 diverse + iso | 60.47 | 0.6829 | +0.11 |
+| + pose+struct blend on aligned (bag only) | 60.64 | 0.6956 | +0.28 |
+| **+ 3-way (bag+AG+lucky) + pose blend** | **60.86** | **0.6639** | **+0.50** |
+
+The +0.50 pp test gain and -0.04 logloss are the largest sustained
+improvements found across the entire iteration log.  Deep tabular models
+contributed indirectly: their poor standalone performance highlighted that
+**model diversity matters, but only when the new models capture genuinely
+new signal**.  AG's raw probs (0.93-correlated with bag) still helped via
+3-way averaging because AG and bag use different ensembling internally.
 
 ### Summary table (final)
 

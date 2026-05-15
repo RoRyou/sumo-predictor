@@ -138,6 +138,7 @@ def run(
     blend_weight: float,
     out_dir: Path,
     n_splits: int = 5,
+    pose_tower_probs_path: Path | None = None,
 ) -> dict:
     bag = np.load(bag_probs_path)
     test_proba = bag["test_iso"].copy()
@@ -167,7 +168,7 @@ def run(
     metrics["bag_acc_on_aligned"] = float(accuracy_score(y_aligned, bag_on_aligned > 0.5))
     metrics["pose_struct_acc_on_aligned"] = float(accuracy_score(y_aligned, pose_on_aligned > 0.5))
 
-    # Hybrids
+    # Hybrids (existing pose+struct XGB)
     p_replace = test_proba.copy()
     p_blend = test_proba.copy()
     for k, idx in valid:
@@ -185,16 +186,89 @@ def run(
         metrics["hybrid_blend_acc"] - metrics["bag_baseline_acc"]
     )
 
+    # ---- NEW: PoseTower variants -----------------------------------
+    pt_metrics = None
+    if pose_tower_probs_path is not None:
+        pt_oof = np.load(pose_tower_probs_path)
+        if pt_oof.shape[0] != len(merged):
+            raise ValueError(
+                f"PoseTower OOF len {pt_oof.shape[0]} != merged len {len(merged)}"
+            )
+        pt_on_aligned = pt_oof[np.array([k for k, _ in valid])]
+        pt_metrics = {
+            "pose_tower_acc_on_aligned": float(
+                accuracy_score(y_aligned, pt_on_aligned > 0.5)
+            ),
+            "pose_tower_logloss_on_aligned": float(
+                log_loss(y_aligned, np.clip(pt_on_aligned, 1e-6, 1 - 1e-6), labels=[0, 1])
+            ),
+        }
+
+        # Variant A: replace bag with pose-tower OOF on aligned (no struct)
+        p_pt_replace = test_proba.copy()
+        for k, idx in valid:
+            p_pt_replace[idx] = pt_oof[k]
+        pt_metrics["pt_replace_acc"] = float(
+            accuracy_score(test_y, p_pt_replace > 0.5)
+        )
+
+        # Variant B: blend 50/50 pose-tower + bag on aligned
+        p_pt_blend = test_proba.copy()
+        for k, idx in valid:
+            p_pt_blend[idx] = 0.5 * pt_oof[k] + 0.5 * test_proba[idx]
+        pt_metrics["pt_blend_bag_50_acc"] = float(
+            accuracy_score(test_y, p_pt_blend > 0.5)
+        )
+
+        # Variant C: triple blend (1/3 each)
+        p_triple = test_proba.copy()
+        for k, idx in valid:
+            p_triple[idx] = (pt_oof[k] + oof[k] + test_proba[idx]) / 3.0
+        pt_metrics["pt_triple_blend_acc"] = float(
+            accuracy_score(test_y, p_triple > 0.5)
+        )
+        pt_metrics["pt_triple_blend_logloss"] = float(
+            log_loss(test_y, np.clip(p_triple, 1e-6, 1 - 1e-6))
+        )
+
+        # Aligned-subset variants (cleaner diagnostic)
+        pt_metrics["pt_blend_bag_50_acc_aligned"] = float(
+            accuracy_score(y_aligned, 0.5 * pt_on_aligned + 0.5 * bag_on_aligned > 0.5)
+        )
+        pt_metrics["pt_triple_acc_aligned"] = float(
+            accuracy_score(
+                y_aligned,
+                (pt_on_aligned + pose_on_aligned + bag_on_aligned) / 3.0 > 0.5,
+            )
+        )
+
+        for k, v in pt_metrics.items():
+            metrics[k] = v
+        metrics["delta_pt_replace_vs_bag"] = (
+            pt_metrics["pt_replace_acc"] - metrics["bag_baseline_acc"]
+        )
+        metrics["delta_pt_blend_vs_bag"] = (
+            pt_metrics["pt_blend_bag_50_acc"] - metrics["bag_baseline_acc"]
+        )
+        metrics["delta_pt_triple_vs_bag"] = (
+            pt_metrics["pt_triple_blend_acc"] - metrics["bag_baseline_acc"]
+        )
+
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "metrics.json").write_text(json.dumps(metrics, indent=2))
-    np.savez(
-        out_dir / "probs.npz",
+    save_kwargs = dict(
         bag_baseline=test_proba,
         hybrid_replace=p_replace,
         hybrid_blend=p_blend,
         pose_struct_oof=oof,
         y_test=test_y,
     )
+    if pt_metrics is not None:
+        save_kwargs["pose_tower_oof_full"] = pt_oof
+        save_kwargs["pt_replace"] = p_pt_replace
+        save_kwargs["pt_blend"] = p_pt_blend
+        save_kwargs["pt_triple"] = p_triple
+    np.savez(out_dir / "probs.npz", **save_kwargs)
     logger.info("Saved %s", out_dir / "metrics.json")
     return metrics
 
@@ -215,6 +289,9 @@ def cmd_run(args: argparse.Namespace) -> int:
         args.blend_weight,
         Path(args.out_dir),
         n_splits=args.n_splits,
+        pose_tower_probs_path=(
+            Path(args.pose_tower_probs) if args.pose_tower_probs else None
+        ),
     )
     print(json.dumps(metrics, indent=2))
     return 0
@@ -231,6 +308,13 @@ def _build_arg_parser() -> argparse.ArgumentParser:
                    help="weight of pose+struct vs bag in the blend on aligned bouts")
     r.add_argument("--n-splits", type=int, default=5)
     r.add_argument("--out-dir", default="runs/hybrid_pose_v1")
+    r.add_argument(
+        "--pose-tower-probs", default=None,
+        help=(
+            "Optional .npy with PoseTower OOF probs (len == aligned bouts, "
+            "ordered like pose_features_aligned.parquet)."
+        ),
+    )
     r.add_argument("-v", "--verbose", action="count", default=1)
     r.set_defaults(func=cmd_run)
     return p
