@@ -522,21 +522,111 @@ conda run -n sumo_pred python -m src.training.ensemble_final run \
     --blend-weight 0.4 --out-dir runs/ensemble_final_v1
 ```
 
-### Cumulative summary
+### Cumulative summary (after v9)
 
 | Stage | test_acc | logloss | Δ vs 60.36 |
 |---|---:|---:|---:|
 | Lucky baseline | 60.36 | 0.7036 | — |
 | + bag-of-20 diverse + iso | 60.47 | 0.6829 | +0.11 |
 | + pose+struct blend on aligned (bag only) | 60.64 | 0.6956 | +0.28 |
-| **+ 3-way (bag+AG+lucky) + pose blend** | **60.86** | **0.6639** | **+0.50** |
+| + 3-way (bag+AG+lucky) + pose blend (v1 SOTA) | 60.86 | 0.6639 | +0.50 |
 
-The +0.50 pp test gain and -0.04 logloss are the largest sustained
-improvements found across the entire iteration log.  Deep tabular models
-contributed indirectly: their poor standalone performance highlighted that
-**model diversity matters, but only when the new models capture genuinely
-new signal**.  AG's raw probs (0.93-correlated with bag) still helped via
-3-way averaging because AG and bag use different ensembling internally.
+---
+
+## Iteration log v10 (Elo / TrueSkill / upset-rate skill features, 2026-05-15)
+
+User asked: *what else hasn't been tried? — try anything that improves accuracy.*
+
+### Elo + TrueSkill + upset-rate features (`src/features/skill_ratings.py`)
+
+This was an oversight: we used rank_diff (positional) and winrate_diff
+windows but never an *adaptive* skill rating updated bout-by-bout.
+
+* `EloTracker` — K=24, initial 1500, classic chess-style.
+* `TrueSkillTracker` — Bayesian mu/sigma via the `trueskill` package.
+* `UpsetTracker` — frequency of wins against higher-ranked opponents.
+
+17 new columns added to features.parquet → features_skill.parquet:
+elo_A/B/diff/expected, ts_mu_A/B/diff, ts_sigma_A/B, ts_skill_A/B/diff,
+upset_rate_A/B/diff, bouts_seen_A/B.
+
+### Single-feature strength
+
+| feature | test_acc alone | corr(y) |
+|---|---:|---:|
+| elo_diff | 57.68 % | +0.229 |
+| ts_skill_diff | 57.96 % | +0.142 |
+| winrate_diff_90 | 56.67 % | +0.17 |
+| rank_diff | 55.83 % | +0.14 |
+
+Elo / TrueSkill are the strongest **single** features — better than rank
+or winrate-window.  Real signal, real correlation.
+
+### But adding them to the stack regresses test_acc
+
+| config | val_cal | test_cal | logloss |
+|---|---:|---:|---:|
+| Lucky single + iso on features.parquet (baseline) | 62.05 | **60.36** | 0.7036 |
+| Lucky single + iso on features_skill.parquet | 60.40 | 58.68 (−1.68) | 0.6705 |
+| 30k extended + features_skill + iso | 59.08 | 57.34 (−2.0) | 0.7839 |
+| Bag-of-20 diverse on features_skill (old XGB params) | 60.73 | 58.85 (−1.62) | 0.7194 |
+| Bag-of-20 diverse on features_skill (re-tuned XGB) | 60.07 | 58.63 (−1.84) | 0.7051 |
+
+Multicollinearity with rank_diff / winrate_diff_90 / career_winrate makes
+skill columns net-noise in the full stack. Same failure mode as the earlier
+interactions / prior-basho attempts.
+
+### But mixing the two BAGS rescues the signal
+
+The bag-of-20 trained on features.parquet (60.47%) and the bag-of-20
+trained on features_skill.parquet (58.63%) **disagree** on many bouts —
+their average is a real diversity gain at the meta-prediction level.
+
+3-way ensemble = (w·bag_base + (1−w)·bag_skill) avg with AG and lucky:
+
+| w_bag | val_acc | val_ll | test_acc | test_ll |
+|---:|---:|---:|---:|---:|
+| 1.00 (no skill bag — v1 SOTA) | 61.72 | 0.6614 | 60.86 | 0.6639 |
+| 0.90 | 61.72 | 0.6604 | 60.86 | 0.6637 |
+| **0.70 (val-tuned)** | **62.05** | **0.6598** | **60.92** | **0.6632** |
+| 0.50 | 61.72 | 0.6597 | 60.86 | 0.6628 |
+| 0.30 | 60.40 | 0.6610 | 60.69 | 0.6635 |
+| 0.00 (skill-bag only) | 60.07 | 0.6651 | 59.91 | 0.6699 |
+
+Adding the pose blend with `w_pose=0.4` on aligned bouts on top:
+
+| Configuration | val_acc | test_acc | logloss | AUC |
+|---|---:|---:|---:|---:|
+| SOTA v1 (3-way + pose blend) | 61.72 | 60.86 | 0.6639 | 0.6363 |
+| **SOTA v2 (bag mix + 3-way + pose blend)** | **62.05** | **60.92** | **0.6632** | **0.6367** |
+
+The val_acc rises from 61.72 → 62.05 (+0.33 pp) and test_acc from 60.86
+→ 60.92 (+0.06 pp).  Best test_acc seen within the val-tied plateau is
+**60.97 %** (w_pose=0.35) but that's a within-plateau cherry-pick; the
+centred (0.7, 0.4) config is what an honest val-tuned protocol picks.
+
+### Reproducible CLI for SOTA v2
+
+```bash
+conda run -n sumo_pred python -m src.training.ensemble_v2 run \
+    --w-bag 0.7 --w-pose 0.4 --out-dir runs/sota_v2
+```
+
+### Final cumulative ladder
+
+| Stage | test_acc | logloss | Δ vs 60.36 baseline |
+|---|---:|---:|---:|
+| Lucky baseline (single + iso) | 60.36 | 0.7036 | — |
+| + bag-of-20 diverse + iso | 60.47 | 0.6829 | +0.11 |
+| + pose+struct blend on aligned | 60.64 | 0.6956 | +0.28 |
+| + 3-way (bag + AG + lucky) avg | 60.86 | 0.6639 | +0.50 |
+| **+ skill-aware bag-mix diversity** | **60.92** | **0.6632** | **+0.56** |
+
+The skill-rating module was a logical oversight (Elo is canonical in
+sports prediction) and is now in the tree.  Net direct contribution to
+test_acc was small (+0.06 pp), but the *indirect* contribution via
+bag-level model diversity confirms a recurring pattern from this project:
+**diverse base models help; redundant features do not**.
 
 ### Summary table (final)
 
