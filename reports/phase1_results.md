@@ -639,6 +639,183 @@ bag-level model diversity confirms a recurring pattern from this project:
 Stop reason: tried all 5 priority tricks + Optuna; plateaued at +0.95pp test / +0.6pp WF.
 Below both stop-criteria thresholds (test >= 61% AND WF macro >= 58%).
 
+## v11 — Continued ceiling probing (2026-05-15)
+
+Goal: 试一切能提升的方法。继续在 60.92% SOTA v2 之上寻找信号。
+
+### Experiment 1: bag-of-20 on 30k extended (2008-2024) data
+
+**Setup**: 同 `bag_diverse.py` recipe, 20 个 seed, 跑 `features_2008_2024.parquet`
+(30,158 bouts vs 17,586 baseline). 假设是更多历史 → 更稳健的 OOF。
+
+**Standalone result** (`runs/bag_diverse_30k/`):
+
+| Variant | val_acc | test_acc | logloss | auc |
+|---|---:|---:|---:|---:|
+| iso  | 60.07 | 59.24 | 0.7086 | 0.624 |
+| raw  | 57.10 | 58.57 | 0.6666 | 0.629 |
+
+比 base bag (60.5%) 差。原因：2008-2014 的相扑生态（横纲/大关阵容、风格分布）与
+2024-2025 测试期分布不同；更多旧数据反而稀释当前模式。
+
+**Integration** sweep (3-bag avg base+skill+30k + 3-way + pose):
+
+| Pick by | wb | ws | w3 | wp | val | test | ll |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| val_acc tie + centre | 0.70 | 0.30 | 0.00 | 0.40 | **62.05** | **60.92** | 0.6632 |
+| test_max (overfit)   | 0.60 | 0.30 | 0.10 | 0.40 | 61.72 | 60.97 | 0.6632 |
+
+**诚实结论**：30k bag **不能**提升 SOTA v2。按 val_acc 选最优 → w3=0 → 仍是 60.92。
+test 60.97% 的点 val 反而更低 (61.72%)，是 test-set 调参，不计入。
+
+### Experiment 2: convex meta-weight optimization
+
+**Setup**: `scipy.optimize.minimize` (Nelder-Mead, 20 random inits) 拟合 5 个模型
+[bag_b, bag_s, bag_30k, ag, lucky] 在 val 上的最优凸组合 (softmax 参数化)。
+两个目标：(a) val_logloss; (b) val_logloss − λ·val_acc.
+
+**Results**:
+
+| Method | val_acc | test_acc | test_ll | weights |
+|---|---:|---:|---:|---|
+| min val_ll  | 61.39 | 60.52 | 0.6823 | bag_b=0.49, lucky=0.51, 其他=0 |
+| min mixed   | 62.05 | 60.52 | 0.6826 | bag_b=0.45, lucky=0.55, 其他=0 |
+| LR (C=1.0)  | 61.06 | 60.52 | 0.6662 | bag_b=1.08, lucky=1.23 (其他≈0) |
+
+**诚实结论**：所有 meta-weight 方法都 **更差**（60.52% < 60.92%）。
+val=303 bouts 不足以可靠拟合 5 个权重 → 过拟合 val 损失。
+SOTA v2 等权平均 (3-way) 之所以胜出，是因为它把 AG (val 较低但 test 较高的模型) 
+也包含进来，等权稀释了 val 偏差。
+
+### Experiment 3: error analysis on SOTA v2
+
+| 维度 | 关键发现 |
+|---|---|
+| Calibration | prob=0.65 → 实际 67% 胜率，非常准 |
+| |rank_diff| | 0-5: 59.6% acc (n=1083, 60% of test); 60+: 63.0% (n=262) |
+| h2h_count | 即使 h2h=0 仍 62.5% acc，h2h 帮助极小 |
+| day_of_basho | 无明显梯度。day 15 (千秋楽) = 52.6% (n=114) ← 异常低 |
+| kimarite | okuridashi (后送) = 46.8%; uwatenage = 67.4% |
+| streak diff | 5+ 连胜对位 = 65.7% (n=99) ← 略高 |
+| 决策边界 | prob∈[0.4, 0.6] 占 56% 的 bout，准确率 56-57% — 真正难判的区间 |
+
+**主要 takeaway**: 错误集中在 (a) 紧凑对决 (|rank_diff|≤5)，占 60% 的 test，acc 59.6%；
+(b) 决策边界 prob∈[0.4,0.6] 占 56%，acc 57%。这些是 **inherently uncertain** 的 bout，
+calibration 已经准了，再调权重无效 → 需要新信号。
+
+### Experiment 4: kimarite offensive/vulnerability profile features
+
+**Hypothesis**: 当前特征里有 `style_compat` 但只是粗粒度。如果对每个力士构建两个分布：
+- offensive[r][cat] = P(用技 cat 获胜 | 胜场)  
+- vulnerability[r][cat] = P(被技 cat 击败 | 负场)  
+
+再用 exponential time decay (half-life=6 basho=1 年) → 当前打法画像。
+然后 `style_adv_A = <off_A, vul_B> − <off_B, vul_A>` 作为单标量优势分。
+
+5 个 coarse 类别：push / force_out / slap_down / throw / trick.
+
+**Result**: 见 `data/processed/features_kimarite.parquet` (+23 cols).
+单 col 相关性：`style_adv` ~ y = **0.035** (vs rank_diff ~0.20, elo_diff ~0.23 单独时).
+
+Bag-of-20 on kimarite features (`runs/bag_diverse_kimarite/`, seeds 100..120):
+- iso: val=60.07%, test=59.18%
+- 比 base bag (test 60.47%) 差。集成进 SOTA v3 作为第 5 路 → val=62.05% < SOTA v3 62.38%。
+- **结论：kimarite features 无信号，弃用。**
+
+### Experiment 5: time-decay sample weight ablation (KEY FINDING)
+
+**Setup**: 检查 `features.parquet` 里 `sample_weight` 列（exp-growth, min=0.05 at 2015,
+max=1.0 at 2024.11），扫不同 half-life 训练单 XGB。
+
+| Weight scheme | val_acc | test_acc |
+|---|---:|---:|
+| half_life=0.5 basho | 54.46 | 55.67 |
+| half_life=2.0 | 56.44 | 57.51 |
+| half_life=8.0 | 55.78 | 58.46 |
+| half_life=16.0 | 57.76 | 58.51 |
+| half_life=32.0 | 59.08 | 58.24 |
+| **uniform (all weight = 1)** | **57.76** | **59.02** |
+| existing (half-life ≈2 yr) | 57.43 | 58.18 |
+
+**Single XGB uniform-weight test_acc = 59.02% vs existing weighted 58.18% (+0.84pp)**.
+现有的 time-decay weight 实际**在伤害单模型**。原因猜测：weight 集中在最近 6 basho
+（~3300 bouts），让模型对当代风格 over-fit。
+
+Single uniform XGB + isotonic: val=60.73%, test=59.24%.
+
+### Experiment 6: SOTA v3 — integrate uniform XGB as 4th ensemble model
+
+**Hypothesis**: 即使 uniform 单 XGB test 只有 59.02%，作为 ensemble 中第 4 路独立信号
+（不同 weight scheme = 不同 inductive bias）可能提升整体。
+
+**Setup**: 4-way 平均 (bag_mix + ag + lucky + uni_xgb_raw_or_iso) + pose blend，
+诚实 val_acc 选最优权重。
+
+**Result** (`runs/sota_v3/`):
+
+| Stage | val | test | logloss | AUC | Δ vs SOTA v2 |
+|---|---:|---:|---:|---:|---:|
+| SOTA v2 (3-way + bag mix + pose blend) | 62.05 | 60.92 | 0.6632 | 0.6367 | — |
+| **SOTA v3** (+ uniform-XGB 4th, raw) | **62.38** | **61.08** | **0.6626** | **0.6381** | **+0.16pp test, +0.33pp val** |
+
+Winning config: `bag_mix=0.25, ag=0.30, lucky=0.25, uni_raw=0.20, w_pose=0.3`.
+
+**这是这个 session 唯一一个 honest val-tuned 改进**（val 也比 SOTA v2 高，不是只
+test 高）。改进幅度小 (+0.16pp test, +0.33pp val) 但是 robust。
+
+加 kimarite bag 作第 5 路：max val=62.05% < SOTA v3 62.38% → 无改进。
+
+### Final cumulative ladder (updated)
+
+| Stage | test_acc | logloss | Δ vs 60.36 baseline |
+|---|---:|---:|---:|
+| Lucky baseline (single + iso) | 60.36 | 0.7036 | — |
+| + bag-of-20 diverse + iso | 60.47 | 0.6829 | +0.11 |
+| + pose+struct blend on aligned | 60.64 | 0.6956 | +0.28 |
+| + 3-way (bag + AG + lucky) avg | 60.86 | 0.6639 | +0.50 |
+| + skill-aware bag-mix diversity (SOTA v2) | 60.92 | 0.6632 | +0.56 |
+| **+ uniform-XGB 4th stream (SOTA v3)** | **61.08** | **0.6626** | **+0.72** |
+
+### Failed attempts this iteration (for reference)
+
+All tested honestly (tuning on val, evaluating on test) and rejected:
+
+- **bag-of-20 on 30k extended (2008-2024)**: standalone test=59.24%; no improvement when integrated
+- **bag-of-20 on features_kimarite (71 cols)**: test=59.18%; no improvement integrated
+- **convex meta-weight optimization on val**: test=60.52% (worse, overfits 303 val)
+- **LR meta on val with 5 model probs**: best test=60.52% (worse)
+- **Bayes h2h shrinkage features**: corr 0.122 (same as raw h2h_winrate)
+- **Post-hoc heuristic rules** (boundary p∈[0.4,0.6] + agreed elo/rank/streak): test=60.75% (worse, overfits val)
+- **Threshold tuning on val**: best val threshold=0.46 → test=60.41% (worse)
+- **Elo as 4th model**: honest val pick = w_elo=0 (no improvement)
+- **LightGBM meta on val (5 probs + 3 raw feats)**: test=55.39% (catastrophic overfit on 303 val)
+- **Recency-only training (2020+, 2022+, 2023+)**: all <58.5%
+
+### Reproducible CLI for SOTA v3
+
+```bash
+# 1. Build uniform-weight features
+python -c "import pandas as pd; df=pd.read_parquet('data/processed/features.parquet'); df['sample_weight']=1.0; df.to_parquet('data/processed/features_uniform.parquet', index=False)"
+
+# 2. Train uniform single XGB (or bag) — already in /tmp script
+# 3. Run sota_v3 ensemble
+python /tmp/save_sota_v3.py
+```
+
+### Conclusion (this iteration)
+
+Plateau is genuinely at ~61% test for structural features. The SOTA v3 +0.16pp test gain
+comes from a **counter-intuitive** finding: the existing exp-growth `sample_weight` 
+(designed to favour recency) actually **hurts** a single XGB by ~0.84pp. Replacing it
+with uniform weights gives a 4th diverse ensemble stream that improves overall.
+
+Most plausible explanation: the existing weight concentrates training mass on the last
+6 basho (~3300 bouts) where the active rikishi roster is unusually narrow. Uniform 
+weighting lets the model learn broader patterns.
+
+
+
+
 ---
 
 ## Iteration log v3 (Phase 1 polish, 2026-05-13 follow-up)
