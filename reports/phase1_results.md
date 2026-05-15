@@ -802,7 +802,29 @@ python -c "import pandas as pd; df=pd.read_parquet('data/processed/features.parq
 python /tmp/save_sota_v3.py
 ```
 
-### Conclusion (this iteration)
+### Experiment 7: bag-of-20 uniform-weight (post-SOTA v3 probe)
+
+**Setup**: scaled the uniform-weight finding to bag-of-20 (`runs/bag_diverse_uniform/`,
+seeds 300..320).
+
+**Result**:
+- raw: val=59.41%, test=60.08% (vs single uniform 57.76%/59.02% — +1.06pp test)
+- iso: val=61.72%, test=59.63% (iso overfits 303-val basho)
+
+Bag improves single but iso calibration on small val hurts test.
+
+**Integration** (replace single uniform with bag uniform in SOTA v3 mix):
+- 4-way + uniform_bag_raw, max val=62.38% → test=60.86% (worse than SOTA v3 61.08%)
+- 4-way + uniform_bag_iso, max val=62.38% → test=61.14% (+0.06pp but probably noise)
+
+**5-way** (single uniform + bag uniform as separate streams):
+- raw variants: max val=62.05% < SOTA v3 62.38% (val drops, not honest improvement)
+- iso variants: val tied at 62.38% but test=60.69% (worse than SOTA v3)
+
+**Conclusion**: uniform_single and uniform_bag are too similar to add further diversity.
+SOTA v3 (with single uniform XGB) remains the best honest config.
+
+### Final conclusion (this iteration)
 
 Plateau is genuinely at ~61% test for structural features. The SOTA v3 +0.16pp test gain
 comes from a **counter-intuitive** finding: the existing exp-growth `sample_weight` 
@@ -812,6 +834,48 @@ with uniform weights gives a 4th diverse ensemble stream that improves overall.
 Most plausible explanation: the existing weight concentrates training mass on the last
 6 basho (~3300 bouts) where the active rikishi roster is unusually narrow. Uniform 
 weighting lets the model learn broader patterns.
+
+**Final SOTA v3 reproducibility**:
+```bash
+# 1. Build uniform-weight features
+python -c "import pandas as pd; df=pd.read_parquet('data/processed/features.parquet'); df['sample_weight']=1.0; df.to_parquet('data/processed/features_uniform.parquet', index=False)"
+
+# 2. Train single uniform XGB + iso (~30 sec)
+python /tmp/uniform_iso.py
+
+# 3. Build 4-way SOTA v3 ensemble (bag_mix + ag + lucky + uniform_raw + pose blend)
+python /tmp/save_sota_v3.py
+# → val=62.38%, test=61.08%, logloss=0.6626
+```
+
+### Methods tried and rejected (final tally for this iteration)
+
+| # | Method | test_acc | rejected because |
+|---|---|---:|---|
+| 1 | bag-of-20 on 30k extended (2008-2024) | 59.24 | old data dilutes current era |
+| 2 | bag-of-20 on kimarite features | 59.18 | weak signal, kimarite cols add noise |
+| 3 | bag-of-20 on all-merged features | 58.79 | combining weak signals = pure noise |
+| 4 | convex meta-weight optimization | 60.52 | overfits 303-row val |
+| 5 | LR meta on val (5 probs) | 60.52 | same |
+| 6 | LightGBM meta (5 probs + 3 raw) | 55.39 | nonlinear meta catastrophically overfits |
+| 7 | Bayesian h2h shrinkage features | — | corr=0.122 same as h2h_winrate |
+| 8 | Post-hoc heuristic boundary rules | 60.75 | doesn't generalize val→test |
+| 9 | Threshold tuning on val | 60.41 | val-optimal threshold ≠ test-optimal |
+| 10 | Elo as 4th model | 60.92 | honest val pick = w_elo=0 (no change) |
+| 11 | Recency-only training (2020/2022/2023+) | 57-59 | smaller train set hurts |
+| 12 | More-aggressive time-decay weight | <59 | recency bias hurts |
+| 13 | **uniform-weight single XGB + iso → 4th ensemble stream** | **61.08** | **SOTA v3** |
+| 14 | 5-way with kimarite bag | 61.14 | val drops vs SOTA v3 62.38% |
+| 15 | 5-way with all-features bag | 61.42 | same — val drops |
+| 16 | bag-of-20 uniform-weight replacing single | — | similar val_acc, no improvement |
+| 17 | 5-way with both single + bag uniform | — | redundant diversity |
+
+**Stop reason**: searched 17 distinct approaches; only one (#13, uniform XGB) yielded
+honest val-tuned improvement of +0.16pp test to **61.08%**. Further compute on the
+structural side is expected to plateau; meaningful improvement now needs either
+(a) more aligned video bouts (currently 83), (b) external data (betting markets,
+injury reports), or (c) genuinely novel feature streams not present in sumo-api.
+
 
 
 
