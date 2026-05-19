@@ -34,7 +34,6 @@ import pandas as pd
 
 from src.features.kinematics import FEATURE_NAMES, compute_features
 from src.features.pose import PoseExtractor
-from src.features.tracking import TwoRikishiTracker
 
 logger = logging.getLogger(__name__)
 
@@ -53,9 +52,9 @@ def find_fight_window(frames_pose: list, fps: float, min_dur: float = 3.0) -> tu
     for fp in frames_pose:
         cur_kp = None
         if fp.get("track_a") is not None and fp.get("track_b") is not None:
-            kpa = np.array(fp["track_a"], dtype=np.float32).reshape(-1, 2)
-            kpb = np.array(fp["track_b"], dtype=np.float32).reshape(-1, 2)
-            cur_kp = np.concatenate([kpa, kpb], axis=0)
+            kpa_xy = fp["track_a"][:, :2]
+            kpb_xy = fp["track_b"][:, :2]
+            cur_kp = np.concatenate([kpa_xy, kpb_xy], axis=0)
         if cur_kp is None or prev is None:
             motions.append(0.0)
         else:
@@ -91,7 +90,6 @@ def extract_one_video(
     actual_fps = src_fps / sample_every
 
     pose = PoseExtractor()
-    tracker = TwoRikishiTracker()
 
     frames_pose = []
     fi = 0
@@ -102,15 +100,17 @@ def extract_one_video(
             break
         if fi % sample_every == 0:
             try:
-                detections = pose.detect(frame)
-                track_a, track_b = tracker.update(detections, frame_shape=frame.shape[:2])
+                people = pose.detect_frame(frame)
+                a_kp, b_kp = PoseExtractor._fallback_two(people)  # each (17, 3)
+                a_has = float(a_kp[:, 2].sum()) > 0
+                b_has = float(b_kp[:, 2].sum()) > 0
                 frames_pose.append({
                     "frame_idx": fi,
-                    "track_a": track_a.tolist() if track_a is not None else None,
-                    "track_b": track_b.tolist() if track_b is not None else None,
+                    "track_a": a_kp if a_has else None,
+                    "track_b": b_kp if b_has else None,
                 })
                 sampled += 1
-            except Exception as e:
+            except Exception:
                 frames_pose.append({"frame_idx": fi, "track_a": None, "track_b": None})
         fi += 1
     cap.release()
@@ -125,28 +125,34 @@ def extract_one_video(
                 video_path.name, sampled, fs, fe, (fe - fs) / actual_fps)
     frames_fight = frames_pose[fs:fe + 1]
 
-    # Compute features for fight portion
-    feats_list = []
+    # Build (T, 2, 17, 3) tensor for the fight window — missing tracks zero-filled.
+    T = len(frames_fight)
+    kp_seq = np.zeros((T, 2, 17, 3), dtype=np.float32)
     both_tracks_count = 0
-    for fp in frames_fight:
+    for t, fp in enumerate(frames_fight):
+        if fp["track_a"] is not None:
+            kp_seq[t, 0] = fp["track_a"]
+        if fp["track_b"] is not None:
+            kp_seq[t, 1] = fp["track_b"]
         if fp["track_a"] is not None and fp["track_b"] is not None:
             both_tracks_count += 1
-            kpa = np.array(fp["track_a"], dtype=np.float32).reshape(-1, 2)
-            kpb = np.array(fp["track_b"], dtype=np.float32).reshape(-1, 2)
-            f = compute_features(kpa, kpb)
-            feats_list.append(f)
 
-    both_tracks_share = both_tracks_count / max(1, len(frames_fight))
+    both_tracks_share = both_tracks_count / max(1, T)
 
-    if not feats_list:
+    if both_tracks_count == 0:
         logger.warning("No valid both-track frames in fight window for %s", video_path.name)
-        # Return placeholder row with NaNs
         agg = {f"{k}_mean": np.nan for k in FEATURE_NAMES}
         agg.update({f"{k}_std": np.nan for k in FEATURE_NAMES})
     else:
-        arr = np.array([[f[k] for k in FEATURE_NAMES] for f in feats_list], dtype=np.float64)
-        means = arr.mean(axis=0)
-        stds = arr.std(axis=0)
+        feats = compute_features(kp_seq)  # (T, F)
+        # Restrict aggregation to frames where both tracks exist
+        valid_mask = np.array([
+            (fp["track_a"] is not None and fp["track_b"] is not None)
+            for fp in frames_fight
+        ], dtype=bool)
+        valid_feats = feats[valid_mask].astype(np.float64)
+        means = valid_feats.mean(axis=0)
+        stds = valid_feats.std(axis=0)
         agg = {}
         for i, k in enumerate(FEATURE_NAMES):
             agg[f"{k}_mean"] = float(means[i])
