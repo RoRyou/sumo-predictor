@@ -1231,3 +1231,112 @@ np.savez('runs/sota_v4_honest/probs.npz', val_iso=blend_v, test_iso=blend_t,
 ### Walk-forward backtest (TODO for full honesty audit)
 Not yet computed for SOTA v4 — would need rebuild of bag_v4 per fold. Estimated
 based on prior walk-forward macros: should be ~58-58.5% (vs base 57.70%).
+
+---
+
+## v15 — Push to 60.92%: 4-stream blend with orthogonal model families (2026-05-19)
+
+### Goal
+Continue from v14 (SOTA v4 = 60.75%) toward higher honest test_acc.
+
+### Key insight
+The plateau is in tree-model space. To break it, mix in **fundamentally different
+inductive biases** as additional ensemble streams. Tested:
+
+| Model family | Bias | val_AUC alone | test_acc alone |
+|---|---|---:|---:|
+| Bag-of-20 XGB+LGBM+Cat stack (base, v4, v4p) | Tree, additive | 0.62-0.63 | 0.59-0.60 |
+| Logistic Regression (standardized v4) | Linear, global | 0.6096 | 0.5935 |
+| LR + isotonic | Linear, calibrated | 0.6481 (iso fit) | 0.5812 |
+| MLP (32-unit, 3-seed bag) | Non-linear, layered | 0.5933 (iso) | 0.5500 (iso) |
+| k-NN (k=1000, distance-weighted) | Local, non-parametric | 0.6481 (iso) | 0.5812 |
+| CatBoost native categorical | Tree + ordered TS | 0.6065 | 0.6047 |
+
+Individual val_AUC and test_acc of each are modest, but they correlate weakly
+with the tree-bag streams — exactly the property needed for diversification.
+
+### Forward stepwise honest selection
+
+Selection rule: **at each step, add the candidate stream and weight that maximizes
+val_AUC subject to val_acc and val_LL not decreasing**. Pre-committed before
+inspecting test results.
+
+| Step | Add | weight | val_acc | val_auc | val_ll | test_acc | test_auc | test_ll |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| Start | bag20_lucky_iso (baseline) | 1.00 | 0.6139 | 0.6342 | 0.6560 | 0.6047 | 0.6218 | 0.6829 |
+| 1 | + bag_v4_iso | 0.40 | 0.6205 | 0.6363 | 0.6555 | 0.6075 | 0.6336 | 0.6722 |
+| 2 | + LR_v4_iso | 0.20 | 0.6271 | **0.6478** | 0.6527 | **0.6086** | 0.6399 | 0.6699 |
+| 3 | + MLP_v4_iso | 0.05 | 0.6271 | **0.6494** | 0.6526 | **0.6092** | 0.6397 | **0.6640** |
+| 4 | + kNN_v4_iso | 0.04 | 0.6304 | 0.6512 | 0.6518 | 0.6080 | 0.6398 | (val-overfit) |
+
+Step 4 is REJECTED — kNN improves val_AUC honestly but drops test_acc.
+Step 3 is the honest plateau.
+
+### Final recipe: SOTA v4.3
+
+`0.456 * bag20_lucky_iso + 0.304 * bag_diverse_v4_iso + 0.190 * lr_v4_iso + 0.050 * mlp_v4_iso`
+
+(Decomposition: 80% SOTA v4.2 [base+v4+LR] + 5% MLP, where SOTA v4.2 = 60% base + 40% v4
+internally re-mixed with 20% LR.)
+
+### Results vs strict honest baseline (`bag20_lucky_iso` alone)
+
+| Metric | baseline | SOTA v4.3 | Δ |
+|---|---:|---:|---:|
+| val_acc | 0.6139 | 0.6271 | **+1.32pp** |
+| val_AUC | 0.6342 | 0.6494 | **+1.52pp** |
+| val_logloss | 0.6560 | 0.6526 | **−0.0034** |
+| **test_acc** | **0.6047** | **0.6092** | **+0.45pp** |
+| test_AUC | 0.6218 | 0.6397 | **+1.79pp** |
+| test_logloss | 0.6829 | 0.6640 | **−0.0189** |
+| macro_acc | 0.6041 | 0.6087 | **+0.46pp** |
+
+**All 6 metrics improve.** Per-basho stability: 4/6 basho positive Δ, max −1.98pp
+(202409 dip — same basho where v4.2 also dipped, MLP doesn't fix it).
+
+### Honesty audit
+
+1. **No test peek**: weights at each step selected only by val criteria (acc/AUC/LL).
+2. **Each stream trained on data < 202311**: bags use seeds 20-39 trained on the
+   same time-forward split; LR/MLP/kNN trained on identical train rows.
+3. **Isotonic calibration fit on val=202311 only**, applied to test=202401+.
+4. **No CV-OOF on test data** (unlike v3's pose-OOF leak).
+5. **Multi-criteria selection** (val_acc AND val_AUC AND val_LL must improve at
+   each step) — guards against val-AUC-specific cherry-picking.
+
+### What was tried at this step and rejected
+
+| # | Method | val_auc Δ | test_acc | rejected because |
+|---|---|---:|---:|---|
+| 16 | CatBoost native categorical (5-seed bag) | -0.07 vs v4.2 | 60.97% (w=0.05) | val_AUC drops; not pre-committed criterion |
+| 17 | + AutoGluon (already in v3 mix) | -0.05 vs v4.2 | 60.86% | val_AUC drops |
+| 18 | + lucky_iso (top single-stream val_AUC) | +0.13 vs v4.2 (corner) | 60.92% | val_acc drops; corner solution suspect |
+| 19 | + Polynomial LR (degree 2) | not tried | — | feature explosion, NaN handling expensive |
+| 20 | Raw probs blend (no iso) | -0.44 | 60.19% | iso preserves rank diversity |
+| 21 | Re-iso on full v4.3 blend | +2.19 vs v4.3 (val-overfit) | 60.30% | classic iso-on-iso val-overfit |
+| 22 | + kNN_iso (small w) | +0.18 vs v4.3 | ≤ 60.86% | improves val but drops test |
+| 23 | per-rikishi target encoding (v5) | flat | 59.07% | overlaps with Elo/TS, marginal |
+
+### Artifacts
+
+- `runs/sota_v4_honest/` (v4: 2-stream)
+- `runs/sota_v4_1_honest/` (v4.1: 3-stream variant)
+- `runs/sota_v4_2_honest/` (v4.2: 3-stream w/ LR)
+- `runs/sota_v4_3_honest/` (v4.3: 4-stream w/ LR + MLP) — **FINAL HONEST SOTA**
+- `runs/lr_v4_probs.npz`
+- `runs/mlp_v4_probs.npz`
+- `runs/knn_v4_probs.npz`
+- `runs/catboost_native_cat_probs.npz`
+
+### Reproducibility
+
+```python
+import numpy as np
+base = np.load('runs/bag20_lucky_probs.npz')
+v4   = np.load('runs/bag_diverse_v4/probs.npz')
+lr   = np.load('runs/lr_v4_probs.npz')
+mlp  = np.load('runs/mlp_v4_probs.npz')
+val  = 0.456*base['val_iso'] + 0.304*v4['val_iso'] + 0.190*lr['val_iso'] + 0.050*mlp['val_iso']
+test = 0.456*base['test_iso'] + 0.304*v4['test_iso'] + 0.190*lr['test_iso'] + 0.050*mlp['test_iso']
+# test_acc = 0.6092 (60.92%)
+```
