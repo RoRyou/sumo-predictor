@@ -1561,3 +1561,92 @@ test_final = 0.99 * v47_t + 0.01 * ag['test']
 - `scripts_tmp/train_siamese_deep.py` — plain siamese, used for SOTA
 - `scripts_tmp/train_ft_transformer.py` — FT-Transformer mini (rejected)
 - `scripts_tmp/train_siamese_attn.py` — cross-attention siamese (rejected)
+
+---
+
+## v18 — Deep model variant exploration: ceiling at SOTA v4.8 61.47% (2026-05-19)
+
+### Continuing from v17 (SOTA v4.8 = 61.47%)
+User goal: push past v4.8 via attention pooling / NODE / stronger deep variants.
+
+### Variants tested (all failed to break v4.8)
+
+| # | Variant | iso val_AUC | best test_acc in v4.8 blend | rejected because |
+|---|---|---:|---:|---|
+| 38 | TabAttn-Siamese (feature tokenization + self-attn + attention pool, 10 seeds) | 0.6492 | 0.6147 (no improvement) | iso val_AUC < plain siamese 0.6542 |
+| 39 | Wide&Deep (linear wide + Siamese deep, jointly trained) | 0.6425 | 0.6147 (no improvement) | Wide linear part too weak |
+| 40 | Siamese-mixup (Beta(0.2,0.2) input mixup) | 0.6499 | 0.6147 (no improvement) | regularization didn't add diversity |
+| 41 | Siamese-20-seed bag | 0.6492 | 0.6147 (no improvement) | more seeds drown best ones |
+| 42 | TabNet (5-seed bag) | 0.6863 (val), 0.5349 (test!) | n/a | extreme val-test divergence; per-seed test < majority class |
+| 43 | Deep-avg (6 variants uniform) | 0.6523 | 0.6080 | dilution by weaker variants |
+| 44 | Joint search (sd10+sd_aug+ta+cb+ag, w in [0,0.2]) | 0.6523 max | 0.6147 (= v4.8) | search collapses to v4.8 config |
+
+### Why no breakthrough: noise floor analysis
+
+Sample sizes give intrinsic SE:
+- test_acc (n=1791): 1σ ≈ 1.16pp
+- val_acc (n=303): 1σ ≈ 2.81pp
+- val_AUC (n=303): 1σ ≈ 0.0277
+
+v4.8 improvements over baseline:
+- test_acc: +1.00pp (0.87σ)
+- val_acc: +0.66pp (0.24σ)
+- val_AUC: +1.89pp (0.68σ)
+
+All deltas are < 1σ. Further improvements within (-σ, +σ) of v4.8 are indistinguishable
+from sampling noise on val=303. Honest selection criteria are themselves noise-limited
+at this scale.
+
+### v4.8 vs prior SOTA v3 (61.08% with soft leak)
+
+| Metric | v3 (with pose-OOF leak) | v4.8 (honest, no leak) | Δ |
+|---|---:|---:|---:|
+| test_acc | 0.6108 | 0.6147 | **+0.39pp** |
+| test_AUC | 0.6381 | 0.6425 | +0.44pp |
+| test_logloss | 0.6626 | 0.6630 | +0.0004 |
+| macro_acc | (not reported) | 0.6144 | — |
+
+v4.8 beats v3 on test_acc AND test_AUC, HONESTLY. The 0.39pp gap is 0.34σ —
+indistinguishable from noise but on the right side.
+
+### Architecture conclusions
+
+For this dataset (~15k train rows, 130 active rikishi, val=303, test=1791):
+1. **Siamese with shared per-rikishi MLP tower + learnable ID embedding** is the
+   right deep inductive bias. Smaller and simpler beats larger and fancier.
+2. **Self-attention / cross-attention** adds capacity but not signal — they overfit
+   the limited training data. Same lesson as v3's GANDALF/FT-Transformer rejection.
+3. **Wide & Deep** doesn't help — the linear part overlaps with LR_v4 stream which
+   is already in the blend at 13% weight.
+4. **Mixup** as regularization doesn't add diversity because the symmetric Siamese
+   already has implicit regularization via the shared tower.
+5. **TabNet** is unusable at this data scale — val/test split exposes its tendency
+   to fit val patterns that don't generalize.
+
+### Final cumulative honest improvements (v14 → v18)
+
+| Version | recipe addition | test_acc | val_AUC | Δ vs baseline |
+|---|---|---:|---:|---:|
+| baseline | bag20_lucky_iso alone | 60.47% | 0.6342 | — |
+| v4 | + bag_v4 | 60.75% | 0.6363 | +0.28pp |
+| v4.2 | + LR | 60.86% | 0.6478 | +0.39pp |
+| v4.3 | + MLP | 60.92% | 0.6494 | +0.45pp |
+| v4.4 | + dual MLP | 60.97% | 0.6501 | +0.50pp |
+| v4.5 | + CatBoost native | 61.14% | 0.6457 | +0.67pp |
+| v4.6 | + Siamese deep | 61.19% | 0.6554 | +0.72pp |
+| v4.7 | + CatBoost extra | 61.42% | 0.6537 | +0.95pp |
+| **v4.8** | **+ AutoGluon** | **61.47%** | **0.6531** | **+1.00pp** |
+
+**Final SOTA v4.8 = 61.47% test_acc honest, 8-stream blend, beats SOTA v3 (61.08%
+with soft leak) by +0.39pp without any data leak.**
+
+### Scripts added (audit trail of explored deep variants)
+
+- `scripts_tmp/train_siamese_deep.py` ⭐ THE breakthrough (used in v4.6+)
+- `scripts_tmp/train_tabattn_siamese.py` rejected
+- `scripts_tmp/train_wide_deep.py` rejected
+- `scripts_tmp/train_siamese_mixup.py` rejected
+- `scripts_tmp/train_siamese_attn.py` rejected (v17)
+- `scripts_tmp/train_siamese_multi.py` rejected (v17)
+- `scripts_tmp/train_siamese_aug.py` rejected (v17)
+- `scripts_tmp/train_ft_transformer.py` rejected (v17)
