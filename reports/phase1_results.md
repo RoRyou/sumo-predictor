@@ -1650,3 +1650,112 @@ with soft leak) by +0.39pp without any data leak.**
 - `scripts_tmp/train_siamese_multi.py` rejected (v17)
 - `scripts_tmp/train_siamese_aug.py` rejected (v17)
 - `scripts_tmp/train_ft_transformer.py` rejected (v17)
+
+---
+
+## v19 — Multi-basho validation honest evaluation (2026-05-19)
+
+### Goal
+Test if expanding val from 1 basho (303 rows) to 3 basho (900 rows) gives better
+weight selection. Hypothesis: val_AUC SE halves, enabling honest finer ensemble tuning.
+
+### Setup (proper, no leak)
+- Train: bashoId < 202307
+- Val:   bashoId ∈ {202307, 202309, 202311} (≈900 rows)
+- Test:  bashoId ≥ 202401 (unchanged, 1791 rows)
+
+Retrained 7 streams under this cutoff: bag20_lucky_mb, bag_diverse_v4_mb,
+lr_mb, mlp_mb (3-seed), mlp10_mb, cb_mb (5-seed native cat), siamese_mb (10-seed bag).
+
+### Individual stream comparison (multi-basho)
+
+| Stream | iso val_AUC (mb) | iso test_acc (mb) | iso val_AUC (sb=202311) |
+|---|---:|---:|---:|
+| base | 0.6266 | 0.5812 | 0.6342 |
+| v4 | 0.6284 | 0.5896 | n/a (in v4.8 mix) |
+| lr | 0.6335 | 0.5941 | 0.6307 |
+| mlp3 | 0.5662 | 0.5595 | 0.5933 |
+| mlp10 | 0.6185 | 0.5779 | 0.6363 |
+| cb | 0.6246 | 0.5913 | 0.6009 |
+| **siamese** | **0.6449** | 0.5985 | **0.6542** |
+
+Siamese dominates again on val_AUC. CB and LR slightly improve in MB framework
+(more diverse val helps their calibration).
+
+### SOTA v5 (multi-basho honest ensemble)
+
+Val-AUC-max honest pick: `0.2 base + 0.1 lr + 0.1 cb + 0.6 sd10 = ` (siamese-heavy)
+
+| Metric | SOTA v5 (mb) | SOTA v4.8 (sb) | Δ |
+|---|---:|---:|---:|
+| val rows | 900 | 303 | — |
+| val_acc | 0.6189 | 0.6205 | −0.16pp |
+| val_AUC | 0.6497 | 0.6531 | −0.34pp |
+| val_LL | 0.6569 | 0.6537 | +0.0032 |
+| **test_acc** | **0.6008** | **0.6147** | **−1.39pp** |
+| test_AUC | 0.6386 | 0.6425 | −0.39pp |
+
+### Why MB underperforms SB
+
+Multi-basho gives 4 basho LESS training data (~900 fewer rows from 15.5k → 14.6k).
+Streams trained on less data generalize slightly worse to 2024 test. The
+1.39pp test_acc gap is the **cost of using more recent basho for val instead of train**.
+
+### Hybrid experiment: MB-honest weights on SB-trained streams
+
+Hypothesis: pick weights using more-stable MB val, but apply to SB streams
+(which see more data).
+
+Best MB-honest config applied to SB streams:
+```
+0.3 base_sb + 0.1 lr_sb + 0.1 cb_sb + 0.5 sd10_sb (no v4, mlp, ag)
+MB val: auc=0.6493 acc=0.6222 ll=0.6572
+SB val: acc=0.6172, test_acc=0.6069, test_AUC=0.6466
+```
+
+Test_AUC (0.6466) is **higher than v4.8 (0.6425)** — the MB-weighted blend has
+better probability ranking. But test_acc is 60.69% (vs v4.8's 61.47%).
+
+The weight transfer doesn't preserve the test_acc gain because:
+1. v4.8's iso calibration on val=202311 was particularly favorable for test threshold.
+2. MB-honest weights heavily favor siamese (0.5-0.6), but in SB framework, the
+   SB-trained siamese (val_AUC 0.6542) is in a balance with other strong SB streams
+   that the MB framework didn't have access to.
+
+### Verdict
+
+**SOTA v4.8 (61.47%) stands as the honest test_acc ceiling.** The multi-basho
+exploration:
+- Cannot exceed v4.8 (60.08% vs 61.47%) due to training data cost.
+- Confirms that v4.8's lead on test_acc partially comes from the favorable
+  iso calibration on val=202311 — but not entirely, since test_AUC (a
+  threshold-independent metric) also favors v4.8 by 0.4pp.
+
+Walk-forward consistency of v4.8: 4/6 basho positive, macro +1.03pp over
+baseline. Statistically: 0.87σ on test_acc, 0.68σ on val_AUC — at the noise
+floor for val=303.
+
+### Scripts added
+
+- `scripts_tmp/train_bag_multibasho.py` — multi-basho XGB+LGBM+Cat stack
+- `scripts_tmp/train_aux_mb.py` — multi-basho LR / MLP / CatBoost native
+- `scripts_tmp/train_siamese_mb.py` — multi-basho siamese
+- `scripts_tmp/ensemble_mb.py` — multi-basho ensemble search
+
+### Final cumulative honest SOTA evolution
+
+| Version | recipe | test_acc | val framework |
+|---|---|---:|---|
+| baseline | bag20_lucky_iso alone | 60.47% | val=202311 (303) |
+| v4 | + bag_v4 (40%) | 60.75% | val=202311 |
+| v4.2 | + LR | 60.86% | val=202311 |
+| v4.3 | + MLP | 60.92% | val=202311 |
+| v4.4 | + dual MLP | 60.97% | val=202311 |
+| v4.5 | + CatBoost native | 61.14% | val=202311 |
+| v4.6 | + Siamese deep | 61.19% | val=202311 |
+| v4.7 | + CatBoost extra | 61.42% | val=202311 |
+| **v4.8** | **+ AutoGluon** | **61.47%** | val=202311 |
+| v5 (mb honest) | mb-honest ensemble | 60.08% | val=3 basho (900) |
+
+v4.8 wins on test_acc; v5 confirms the SB win isn't fully a fluke (mb test_AUC
+within 0.4pp).
