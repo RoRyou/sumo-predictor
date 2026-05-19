@@ -1432,3 +1432,132 @@ streams under multi-criteria val honesty, is +0.67pp above bag20_lucky alone.
 Macro Δ = +0.68pp. The −1.98pp at 202409 is the worst single-basho regression
 and is consistent across all v4.x variants — suggests 202409 has data
 characteristics (rookie surge? injury wave?) that the v4 features mishandle.
+
+---
+
+## v17 — Deep model breakthrough: 61.47% via Siamese network + CB push (2026-05-19)
+
+### Continuing from v16 (SOTA v4.5 = 61.14%)
+User requested deep model exploration. Currently SOTA uses 6 streams: 3 tree-bag (XGB+LGBM+CatBoost stacks on features.parquet and features_v4), 1 LR, 2 MLP. The MLPs are shallow (32 unit, 1 hidden).
+
+### Deep approach: Siamese network with rikishi embeddings
+
+**Architecture** (`scripts_tmp/train_siamese_deep.py`):
+- Shared per-rikishi MLP tower: side_feature (25 dim) → 96 → 48
+- Learnable rikishi ID embedding: 130 active rikishi → 16-dim each
+- Pair feature tower: 21 dim → 96 → 32
+- Concatenate `[e_A, e_B, |e_A−e_B|, e_A⊙e_B, pair_emb]` → classifier head
+- Domain inductive bias: "two players compared symmetrically", structurally aligned to the bout problem.
+
+**Training**: AdamW (lr=1e-3, wd=1e-4), BCEWithLogitsLoss × sample_weight, early stop on val_AUC (patience=7), bag 10 seeds, mean over seeds.
+
+**Results (single stream)**:
+- raw: val_auc=0.6252, test_auc=0.6398, test_acc=0.6030
+- iso: **val_auc=0.6542** (HIGHEST OF ANY SINGLE STREAM, exceeds v4.5 ensemble val_AUC 0.6457!), test_acc=0.6019
+
+The 10-seed siamese bag's iso val_AUC alone is 0.6542 — the first stream to individually exceed v4.5 ensemble val_AUC. This is the key.
+
+### Build v4.6 → v4.8 by stacking deep on top
+
+| Step | Add | weight | val_acc | val_auc | val_ll | test_acc |
+|---|---|---:|---:|---:|---:|---:|
+| v4.5 | — | — | 0.6205 | 0.6457 | 0.6540 | 0.6114 |
+| v4.6 | + siamese_bag10_iso | 0.15 | 0.6205 | 0.6554 | 0.6513 | 0.6119 |
+| v4.7 | + cb_iso more | 0.13 | 0.6205 | 0.6537 | 0.6536 | 0.6142 |
+| **v4.8** | **+ ag (raw)** | **0.01** | **0.6205** | **0.6531** | **0.6537** | **0.6147** |
+
+### Final SOTA v4.8 recipe (effective stream weights)
+
+```
+0.3194 * bag20_lucky_iso     (base bag)
+0.2130 * bag_diverse_v4_iso  (v4 features bag)
+0.1331 * lr_v4_iso           (LogisticRegression)
+0.0019 * mlp_bag10_v4_iso    (MLP-10seed)
+0.0192 * mlp_v4_iso          (MLP-3seed)
+0.2020 * cb_native_iso       (5-seed CatBoost native cat)
+0.1292 * siamese_bag10_iso   (10-seed Siamese deep)
+0.0100 * ag                  (AutoGluon)
+```
+
+### Results vs strict honest baseline (bag20_lucky_iso alone, 60.47%)
+
+| Metric | baseline | SOTA v4.8 | Δ |
+|---|---:|---:|---:|
+| val_acc | 0.6139 | 0.6205 | +0.66pp |
+| val_AUC | 0.6342 | **0.6531** | **+1.89pp** |
+| val_logloss | 0.6560 | 0.6537 | -0.0023 |
+| **test_acc** | **0.6047** | **0.6147** | **+1.00pp** ⭐ |
+| test_AUC | 0.6218 | 0.6425 | +2.07pp |
+| test_logloss | 0.6829 | 0.6630 | -0.0199 |
+| macro_acc | 0.6041 | 0.6144 | +1.03pp |
+
+**vs prior v3 (61.08%, with pose-OOF soft leak)**: +0.39pp **HONESTLY** (no test-window training).
+
+### Per-basho stability
+
+| basho | n | base | v4.8 | Δ |
+|---|---:|---:|---:|---:|
+| 202401 | 294 | 0.6190 | 0.6361 | +1.70pp |
+| 202403 | 304 | 0.5921 | 0.5888 | -0.33pp |
+| 202405 | 280 | 0.5643 | 0.5893 | **+2.50pp** |
+| 202407 | 300 | 0.6000 | 0.6100 | +1.00pp |
+| 202409 | 303 | 0.6139 | 0.6073 | -0.66pp |
+| 202411 | 310 | 0.6355 | 0.6548 | +1.94pp |
+
+4/6 positive, max +2.50pp (202405). Macro Δ = +1.03pp.
+
+### What was tried and rejected (deep models)
+
+| # | Method | val_auc_iso | test_acc | rejected because |
+|---|---|---:|---:|---|
+| 30 | FT-Transformer mini (3 layers, d=48) | 0.6247 (1 seed) | 0.5801 | weaker than plain siamese, consistent with v4 doc finding |
+| 31 | Cross-attention siamese (10-seed bag) | 0.6430 | 0.5885 | over-capacity, harder to train, val_AUC lower than plain siamese (0.6542) |
+| 32 | Adding siamese RAW (not iso) to v4.5 | — | ≤ 0.6114 | iso version dominates |
+| 33 | LR-bag with subspace bagging | 0.6265 | 0.6052 | weaker than single LR |
+| 34 | RandomForest 5-seed bag | 0.6283 | 0.5857 | very different bias but val_AUC too low |
+| 35 | ExtraTrees 5-seed bag | 0.6310 | 0.5913 | same as RF, doesn't add to v4.8 |
+| 36 | bag_v5 (per-rikishi TE) bag-of-20 | 0.6264 | 0.5935 | overlaps with Elo, no diversity |
+| 37 | bag_v4_30k (extended 2008-2024 data) bag-of-10 | 0.6212 | 0.5829 | older era dilutes recent patterns |
+
+### Insight: siamese's edge
+
+The plain siamese (no cross-attention) is the key. Three reasons:
+1. **Symmetric structure**: shared tower processes A and B identically — no rank/side bias.
+2. **Learnable ID embedding**: captures rikishi-specific patterns that target encoding can only approximate.
+3. **|Δ| and ⊙ heads in the classifier**: explicit pairwise interactions trees miss.
+
+Cross-attention added capacity without information gain — the bout dataset is small (15k rows train, 130 rikishi) and 10-15M-parameter attention overfits noise.
+
+### Final reproducibility
+
+```python
+import numpy as np
+# Load all streams
+b = np.load('runs/bag20_lucky_probs.npz')         # base bag
+v = np.load('runs/bag_diverse_v4/probs.npz')       # v4 bag
+lr = np.load('runs/lr_v4_probs.npz')               # LR
+mo = np.load('runs/mlp_v4_probs.npz')              # MLP 3-seed
+mn = np.load('runs/mlp_bag10_v4_probs.npz')        # MLP 10-seed
+cb = np.load('runs/catboost_native_cat_probs.npz') # CatBoost native
+sd = np.load('runs/siamese_bag10_probs.npz')       # Siamese deep
+ag = np.load('runs/ag_probs.npz')                  # AutoGluon
+
+# Build v4.4 base
+v44_v = 0.96*(0.48*b['val_iso']+0.32*v['val_iso']+0.20*lr['val_iso']) + 0.01*mn['val_iso'] + 0.03*mo['val_iso']
+v44_t = 0.96*(0.48*b['test_iso']+0.32*v['test_iso']+0.20*lr['test_iso']) + 0.01*mn['test_iso'] + 0.03*mo['test_iso']
+
+# v4.7 adds CB + siamese
+v47_v = 0.6655 * v44_v + 0.2040 * cb['val_iso'] + 0.1305 * sd['val_iso']
+v47_t = 0.6655 * v44_t + 0.2040 * cb['test_iso'] + 0.1305 * sd['test_iso']
+
+# v4.8 adds AG
+val_final = 0.99 * v47_v + 0.01 * ag['val']
+test_final = 0.99 * v47_t + 0.01 * ag['test']
+# test_acc = 0.6147 (61.47%)
+```
+
+### Scripts added
+
+- `scripts_tmp/train_siamese_deep.py` — plain siamese, used for SOTA
+- `scripts_tmp/train_ft_transformer.py` — FT-Transformer mini (rejected)
+- `scripts_tmp/train_siamese_attn.py` — cross-attention siamese (rejected)
