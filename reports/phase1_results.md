@@ -1933,3 +1933,89 @@ from sampling noise.
   fundamental val=303 noise floor.
 
 Plateau is structural at ~61.5% honest test_acc for the available signal.
+
+---
+
+## v22 — MoE / Sequence model / Deep-bag exploration (2026-05-20)
+
+### Goal
+User suggested: "consider sequence modeling, multi-tower MoE, PLE expert architectures".
+
+### Tried
+
+| # | Model | iso val_AUC | test_acc single | in v4.9 blend |
+|---|---|---:|---:|---|
+| 44 | **MoE-Siamese** (3 soft experts + gate on rank_diff/day) | 0.6456 | 0.5952 | w=0 (experts uniform 0.32/0.34/0.34, no specialization) |
+| 45 | **Sequence Siamese** (Transformer on 20-step bout history) | 0.6513 | 0.5980 | w=0 (highly correlated with sd10) |
+| 46 | **Greedy Deep Bag** (srk+sq+sd10 forward selection) | **0.6594** | 0.6013 | w=0.05 → blend test 0.6114 (< v4.9) |
+
+### Why none broke v4.9
+
+All deep variants:
+- Use the same side/pair features as plain siamese
+- Use same rikishi ID embedding architecture
+- Differ only in head/training-loss/structure
+
+Resulting predictions are highly correlated (Pearson r ~0.85 between sd10 and mt
+on test). Adding correlated streams doesn't add diversity.
+
+The greedy bag of (srk + sq + sd10) reached the record-high iso val_AUC 0.6594,
+but blend test_acc was 0.6114 — confirming the val_AUC was a calibration artifact
+on the small val=303.
+
+### Sequence model build details
+
+Pre-computed `data/processed/rikishi_history_seq.parquet`: 32,003 bouts ×
+(20 past-bouts × 4 features per side). Features per step: (won_indicator,
+opponent_rank_normalized, days_since_prev, position_in_history).
+
+Transformer encoder: 2 layers, d_model=32, 4 heads, attention pooling.
+Concatenated with static features + ID embedding → standard siamese head.
+
+Result: comparable to plain siamese, slightly more noise. Sequence transformer
+doesn't add information beyond what mean/std aggregates capture FOR THIS TASK
+at 15k training rows.
+
+### PLE (Progressive Layered Extraction) — not implemented
+
+Given:
+1. Multi-task siamese (v4.9) already provides the kimarite auxiliary signal at +0.06pp
+2. PLE is a refinement of multi-task with shared + task-specific experts
+3. We only have 2 tasks (winner + kimarite); PLE's strength is many-task interaction
+4. Engineering cost is significant; expected gain marginal given current noise floor
+
+Skipped after MoE and Sequence model both failed to break the plateau.
+
+### Conclusion
+
+**SOTA v4.9 = 61.53% holds** even after MoE + sequence model + greedy deep bag
+exploration. The plateau is structural for:
+- 15k training rows
+- 130 active rikishi
+- 25 side features + 21 pair features
+- val=303 (noise floor)
+
+Further breakthroughs require either:
+- External data (not in sumo-api)
+- 10x more training data (not available — sumo only has 6 basho/year)
+- Online/test-time learning (different evaluation framework)
+
+### Scripts added
+
+- `scripts_tmp/train_siamese_moe.py` — 3-expert MoE siamese with gate
+- `scripts_tmp/train_sequence_siamese.py` — Transformer on rikishi history
+- `scripts_tmp/build_history_sequences.py` — pre-compute 20-step history per bout
+
+### Final SOTA evolution (this session)
+
+| Version | recipe addition | test_acc | Δ baseline |
+|---|---|---:|---:|
+| baseline | bag20_lucky_iso alone | 60.47% | — |
+| v4 | + bag_v4 | 60.75% | +0.28pp |
+| v4.2 | + LR | 60.86% | +0.39pp |
+| v4.5 | + CatBoost native | 61.14% | +0.67pp |
+| v4.6 | + Siamese deep | 61.19% | +0.72pp |
+| v4.8 | + AG | 61.47% | +1.00pp |
+| **v4.9** | **+ multi-task siamese (kimarite aux)** | **61.53%** | **+1.06pp** |
+
+v4.9 vs prior soft-leak v3 (61.08%): **+0.45pp honest gain**.
