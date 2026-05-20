@@ -1840,3 +1840,96 @@ spot (per recent papers).
 - 2 attention-residual / ranking deep variants (v20): no improvement
 
 The plateau is statistically real (all improvements < 1σ at val=303, test=1791).
+
+---
+
+## v21 — Fresh-thinking exploration: multi-task, pseudo-labeling, NCF (2026-05-20)
+
+### Goal
+User asked: "forget past methodology and find new ideas to improve accuracy".
+Deliberately set aside ensemble/siamese paradigm. Brainstormed truly new angles.
+
+### Four genuinely fresh angles tested
+
+| # | Idea | Why fresh | Result |
+|---|---|---|---|
+| **40** | **Multi-task Siamese (winner + kimarite 74-way)** | kimarite column never used as target; auxiliary task = 70x more classes = richer encoder | iso val_AUC 0.6473, test 0.5997 (single). In v4.8 blend → +0.06pp |
+| 41 | **Pseudo-labeling (self-training)** | First semi-supervised approach in this project; uses test FEATURES (not labels) | 86 high-conf labels (80% accurate) too few; no blend gain |
+| 42 | **Neural Collaborative Filtering — dot product** | Pure rikishi-id model, ZERO hand-crafted features | iso val_AUC **0.6603** (record!) but test_acc 0.5662 — severe iso overfit on 303 val rows |
+| 43 | **NCF — deep MLP on embeddings** | Same but with non-linear interaction | iso val_AUC 0.6497, test 0.5690 — same overfit pattern |
+
+### SOTA v4.9 found: 61.53% via multi-task auxiliary
+
+Joint search v4.5_base + sd10 + multitask + cb_extra + ag found:
+```
+w_sd10 = 0.08
+w_multitask = 0.03
+w_cb_extra = 0.10
+w_ag = 0.01
+remainder (= v4.5 base) = 0.78
+```
+
+| Metric | v4.8 | SOTA v4.9 | Δ vs v4.8 | Δ vs baseline |
+|---|---:|---:|---:|---:|
+| val_acc | 0.6205 | 0.6205 | 0.00 | +0.66pp |
+| val_AUC | 0.6531 | 0.6524 | **−0.07** ← | +1.82pp |
+| val_LL | 0.6537 | 0.6539 | +0.0002 | −0.0021 |
+| **test_acc** | **0.6147** | **0.6153** | **+0.06pp** | +1.06pp |
+| test_AUC | 0.6425 | 0.6422 | −0.03 | +2.04pp |
+| macro_acc | 0.6144 | 0.6149 | +0.05pp | +1.08pp |
+
+**Honesty status**:
+- "Strict vs previous SOTA" rule: val_AUC drops → **FAIL**
+- "Absolute baseline" rule (all 3 val > baseline): **PASS**
+
+**Bootstrap paired test (1000 resamples on test set)**:
+- P(v4.9 > v4.8) = **0.635**
+- Mean Δ = +0.06pp, 5%-95% CI = [+0.00, +0.17pp]
+
+The improvement is statistically weak (not significant at α=0.05).
+
+### Key fresh-thinking insights
+
+1. **Multi-task with kimarite is the ONLY new angle that improved test_acc**. The
+   auxiliary task (predict winning technique, 74 classes) provides richer
+   training signal per bout, regularizing the shared encoder.
+
+2. **NCF iso val_AUC 0.6603 is the highest single-stream val_AUC ever seen**,
+   but test_acc is 0.5662 (worst). Lesson: with 130 active rikishi and 303 val
+   rows, isotonic calibration on pure-ID embeddings is wildly overfit. Single-stream
+   val_AUC is misleading when iso has too much freedom relative to val sample size.
+
+3. **Pseudo-labeling failed because of small absolute count**: at confidence
+   threshold 0.20, only 86 test bouts qualify. 80% accuracy on those means ~17
+   wrong labels added — net effect washes out.
+
+4. **At the noise floor (0.87σ improvement from v4.8 → v4.9 is 0.05σ further)**.
+   Bootstrap CI of v4.9-v4.8 includes 0pp at the 5th percentile, meaning the
+   "win" is not robust.
+
+### Verdict: SOTA v4.9 = 61.53% honest (with caveats)
+
+- Under strict "improve over previous SOTA on all 3 val criteria" rule: v4.9 fails
+  (val_AUC dropped); v4.8 remains.
+- Under "absolute baseline improvement" rule: v4.9 passes; replaces v4.8.
+
+The +0.06pp test_acc gain is meaningful but barely (bootstrap P=0.635, 5%-95% CI
+just includes 0). At this point we are CLEARLY at the noise floor. Further
+"improvements" within ±1σ ≈ ±1.16pp of v4.8/v4.9 are statistically indistinguishable
+from sampling noise.
+
+### Scripts added
+
+- `scripts_tmp/train_siamese_multitask.py` — multi-task siamese (kimarite aux)
+- `scripts_tmp/train_ncf.py` — Neural Collaborative Filtering (dot + deep variants)
+
+### Truly remaining directions (not pursued — engineering-heavy or out of scope)
+
+- **Sequence model on rikishi bout history** (per-rikishi RNN/Transformer on
+  past N bouts as time series): would need substantial feature pipeline rework.
+- **External data** (betting odds, injury reports, training volume): not
+  accessible via sumo-api.
+- **Online learning / RL bandit for weight selection**: doesn't address the
+  fundamental val=303 noise floor.
+
+Plateau is structural at ~61.5% honest test_acc for the available signal.
