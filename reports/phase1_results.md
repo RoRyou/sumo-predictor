@@ -1759,3 +1759,84 @@ floor for val=303.
 
 v4.8 wins on test_acc; v5 confirms the SB win isn't fully a fluke (mb test_AUC
 within 0.4pp).
+
+---
+
+## v20 — Web-search-inspired deep variants (2026-05-20)
+
+### Goal
+User asked about attention residual + other deep improvements. Searched 2024-2025
+literature: ExcelFormer (semi-permeable attention + augmentation), Trompt (column
++ sample features), TabPFN v2 (foundation model for small data), ResNet-style
+tabular residual networks (ALTARN), Siamese + Triplet loss for sports ranking
+(Rugby Ranking paper 87.5%).
+
+### Tried
+
+**38. Siamese-ResAttn**: ResNet residual blocks + Squeeze-and-Excitation channel
+attention + LayerNorm. 2 residual blocks per side tower.
+- iso val_AUC = 0.6419 (vs plain siamese 0.6542) — LOWER
+- test_acc in blend max 0.6147 (no improvement over v4.8)
+- Conclusion: extra capacity without information gain, same lesson as cross-attn.
+
+**39. Ranking-Siamese (margin ranking + BCE)**: per-rikishi scalar score head +
+margin ranking loss (winner_score - loser_score > margin) + BCE.
+- iso val_AUC = **0.6572** (HIGHEST single-stream val_AUC ever found!)
+- BUT iso test_acc = 0.5784 (significant val-iso overfit on the small val=303)
+- raw test_acc = 0.5980 (closer to plain siamese 0.5985)
+- In v4.8 blend (raw or iso): test_acc ≤ 0.6147, no improvement
+- Joint search with plain siamese: picks w_ranking=0 (no diversity)
+
+The iso val_AUC 0.6572 is a "lucky" peak on the small val basho — the ranking
+loss makes the model rank rikishi pairs better on val=202311, but iso
+calibration on the same val converges to an overconfident decision boundary
+that doesn't transfer to test.
+
+### Why deep variants keep failing to break v4.8
+
+The pattern across 12+ deep variants (Siamese plain, FT-Transformer, TabAttn,
+Wide&Deep, Cross-Attn, Multi-cap, Augmented, Mixup, Multi-basho, ResAttn,
+Ranking, plus TabNet experiments):
+
+| Variant val_AUC iso | Mechanism | Best |
+|---:|---|---|
+| 0.6572 | Ranking-Siamese | val-iso overfit |
+| 0.6542 | Plain Siamese 10-seed (v4.8 anchor) | sweet spot |
+| 0.6499 | Mixup, MLP-bag-10 | regularized but no diversity gain |
+| 0.6492 | TabAttn, Siamese 20-seed | over-parameterized |
+| 0.6430 | Cross-Attn Siamese | over-capacity |
+| 0.6425 | Wide&Deep | linear overlap with LR_v4 |
+| 0.6419 | ResAttn (ALTARN-style) | over-parameterized |
+| 0.6399 | Multi-cap (15 models) | diluted by weak variants |
+
+The plain siamese with ID embedding lives in the sweet spot of capacity for
+15k train rows, 130 active rikishi, and ~25-feature-per-side input.
+
+**TabPFN v2** is not retried because TabPFN v2.6 already gave standalone test
+59.35% (per v4 doc) — it tops out at 10k samples and our 15k is past the sweet
+spot (per recent papers).
+
+### Scripts added
+
+- `scripts_tmp/train_siamese_resattn.py` — ResNet residual blocks + SE attention
+- `scripts_tmp/train_siamese_ranking.py` — margin ranking loss + BCE
+
+### What hasn't been tried (and unlikely to break)
+
+1. **TabPFN v2.7 / TabPFN-Mix** — newer foundation models, but our 15k > 10k limit
+2. **ExcelFormer** — published 2024, no PyPI package, would need from-scratch impl
+3. **Per-rikishi sequence model on bout history (RNN/Transformer)** — would need
+   sequential featurization (last N bouts per rikishi as time series). Engineering-
+   heavy and unclear payoff given how well the static `winrate_*` and Elo features
+   already capture history.
+4. **External data**: betting markets, injury reports, gym training data — not
+   accessible via sumo-api.
+
+### Final SOTA reaffirmed
+
+**SOTA v4.8 = 61.47% honest test_acc**. Confirmed against:
+- 14 single-basho deep + ensemble variants (v14-v18)
+- Multi-basho honest framework (v19): 60.08% (1.4pp cost from less training data)
+- 2 attention-residual / ranking deep variants (v20): no improvement
+
+The plateau is statistically real (all improvements < 1σ at val=303, test=1791).
